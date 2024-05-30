@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..services import user_service
+from ..services import auth_service
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 auth_bp = Blueprint("auth", __name__)
@@ -15,7 +15,7 @@ def register():
     if not all(field in data for field in required_fields):
         return jsonify({"message": "Missing required fields."}), 400
 
-    success, message = user_service.register(
+    success, message = auth_service.register(
         data.get("first_name"),
         data.get("last_name"),
         data.get("email"),
@@ -30,7 +30,7 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    valid, result = user_service.authenticate(data.get("email"), data.get("password"))
+    valid, result = auth_service.authenticate(data.get("email"), data.get("password"))
     if not valid:
         return jsonify({"message": result}), 401
 

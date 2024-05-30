@@ -1,9 +1,9 @@
-from .extensions import db
+from ..extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
-import enum
+from enum import Enum
 
 
-class Role(enum.Enum):
+class Role(Enum):
     USER = "USER"
     ADMIN = "ADMIN"
 
