@@ -1,4 +1,4 @@
-from ..models import User
+from ..models.user import User
 from ..extensions import db
 from flask_jwt_extended import create_access_token
 from .utils.validate import validate_register, validate_login
