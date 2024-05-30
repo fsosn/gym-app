@@ -1,30 +1,37 @@
 from ..models import User
 from ..extensions import db
+from flask_jwt_extended import create_access_token
+from .utils.validate import validate_register, validate_login
 
 
 def register(first_name, last_name, email, password):
-    try:
-        if User.query.filter_by(email=email).first():
-            return False, "User already exists"
+    if email and User.query.filter_by(email=email).first():
+        return False, "User already exists."
 
-        new_user = User(first_name=first_name, last_name=last_name, email=email)
-        new_user.set_password(password)
+    valid, message = validate_register(first_name, last_name, email, password)
 
-        db.session.add(new_user)
-        db.session.commit()
+    if not valid:
+        return False, message
 
-        return True, "Registered successfully."
-    except Exception as e:
-        return False, str(e)
+    new_user = User(first_name=first_name, last_name=last_name, email=email)
+    new_user.set_password(password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return True, "Registered successfully."
 
 
 def authenticate(email, password):
-    try:
-        user = User.query.filter_by(email=email).first()
+    valid, message = validate_login(email, password)
+    if not valid:
+        return False, message
 
-        if not user or not user.check_password(password):
-            return False, "Invalid credentials"
+    user = User.query.filter_by(email=email).first()
+    if not user or not user.check_password(password):
+        return False, "Invalid credentials."
 
-        return True, user
-    except Exception as e:
-        return False, str(e)
+    token = create_access_token(
+        identity={"id": user.id, "email": user.email, "role": user.role.name}
+    )
+
+    return True, token
