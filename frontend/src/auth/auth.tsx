@@ -1,10 +1,12 @@
 import { API_ENDPOINTS } from "../config.tsx";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 interface Auth {
   isAuthenticated: boolean;
   role: string | null;
   userId: string | null;
+  email: string | null;
   signIn: (
     email: string,
     password: string,
@@ -21,12 +23,14 @@ interface Auth {
     onSuccess: () => void,
     onFailure: (message: string) => void
   ) => Promise<void>;
+  authenticateFromCookie: () => Promise<void>;
 }
 
 const auth: Auth = {
   isAuthenticated: false,
   role: null,
   userId: null,
+  email: null,
 
   signIn: async (
     email: string,
@@ -58,6 +62,12 @@ const auth: Auth = {
       auth.role = resRole;
       auth.userId = userId;
 
+      const userData = { token, userId, resRole };
+      Cookies.set("userData", JSON.stringify(userData), {
+        secure: true,
+        sameSite: "strict",
+      });
+
       callback({ userId, token });
     } catch (e) {
       alert("Authentication failed");
@@ -70,6 +80,8 @@ const auth: Auth = {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     auth.isAuthenticated = false;
     auth.userId = null;
+    auth.email = null;
+    Cookies.remove("userData");
     window.location.reload();
     callback();
   },
@@ -109,6 +121,35 @@ const auth: Auth = {
         onFailure(errorMessage);
       } else {
         onFailure("An unknown error occurred.");
+      }
+    }
+  },
+
+  authenticateFromCookie: async (): Promise<void> => {
+    const userDataString = Cookies.get("userData");
+    if (userDataString) {
+      const userData = JSON.parse(userDataString);
+      const token = userData.token;
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.DETAILS}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        auth.isAuthenticated = true;
+        auth.role = response.data.role;
+        auth.userId = response.data.id;
+        auth.email = response.data.email;
+      } catch (error) {
+        console.error("Error during authentication from cookie:", error);
+        Cookies.remove("userData");
+        auth.isAuthenticated = false;
+        auth.role = null;
+        auth.userId = null;
+        auth.email = null;
       }
     }
   },

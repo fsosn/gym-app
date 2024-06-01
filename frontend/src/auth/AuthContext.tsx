@@ -1,11 +1,11 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { auth } from "./auth.tsx";
 
 interface AuthContextType {
-  user: string | null;
+  authenticated: boolean | null;
+  email: string | null;
   role: string | null;
   userId: string | null;
-  token: string | null;
   signIn: (
     email: string,
     password: string,
@@ -21,27 +21,23 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
   const signIn = async (
     email: string,
     password: string,
     callback: () => void
   ): Promise<void> => {
-    return auth.signIn(
-      email,
-      password,
-      ({ userId, token }: { userId: string; token: string }) => {
-        setEmail(email);
-        setRole(auth.role);
-        setUserId(userId);
-        setToken(token);
-        callback();
-      }
-    );
+    return auth.signIn(email, password, ({ userId }: { userId: string }) => {
+      setEmail(email);
+      setRole(auth.role);
+      setUserId(userId);
+      setAuthenticated(true);
+      callback();
+    });
   };
 
   const signOut = async (callback: () => void): Promise<void> => {
@@ -49,14 +45,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setEmail(null);
       setRole(null);
       setUserId(null);
-      setToken(null);
       callback();
     });
   };
 
+  const initializeAuthentication = async () => {
+    try {
+      await auth.authenticateFromCookie();
+      setEmail(auth.email);
+      setRole(auth.role);
+      setUserId(auth.userId);
+      setAuthenticated(auth.isAuthenticated);
+    } catch (error) {
+      console.error("Error initializing authentication:", error);
+    }
+  };
+
+  useEffect(() => {
+    initializeAuthentication();
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ user: email, role, userId, token, signIn, signOut }}
+      value={{
+        authenticated,
+        email,
+        role,
+        userId,
+        signIn,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>
