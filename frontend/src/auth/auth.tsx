@@ -18,7 +18,8 @@ interface Auth {
       email: string;
       password: string;
     },
-    callback: () => void
+    onSuccess: () => void,
+    onFailure: (message: string) => void
   ) => Promise<void>;
 }
 
@@ -33,18 +34,17 @@ const auth: Auth = {
     callback: (data: { userId: string; token: string }) => void
   ): Promise<void> => {
     try {
-      const authResponse = await axios.post(
+      const response = await axios.post(
         `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.LOGIN}`,
         { email, password }
       );
 
-      if (!authResponse.data.success) {
-        alert(authResponse.data.message);
-        window.location.reload();
+      if (response.status !== 200) {
+        alert(response.data.message);
         return;
       }
 
-      const token = authResponse.data.token;
+      const token = response.data.token;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       const getRoleResponse = await axios.get(
@@ -81,7 +81,8 @@ const auth: Auth = {
       email: string;
       password: string;
     },
-    callback: () => void
+    onSuccess: () => void,
+    onFailure: (message: string) => void
   ): Promise<void> => {
     try {
       const response = await axios.post(
@@ -93,13 +94,22 @@ const auth: Auth = {
           password: userData.password,
         }
       );
-      alert(response.data.message);
-      if (response.data.success) {
-        callback();
+      if (response.status === 201) {
+        onSuccess();
+      } else {
+        onFailure(
+          response.data.message || "Registration failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("Registration failed. Please try again.");
+
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data.message;
+        onFailure(errorMessage);
+      } else {
+        onFailure("An unknown error occurred.");
+      }
     }
   },
 };
