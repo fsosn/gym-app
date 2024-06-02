@@ -4,6 +4,7 @@ import { LoginForm } from "./components/auth/LoginForm";
 import { RegisterForm } from "./components/auth/RegisterForm";
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "./auth/RequireAuth";
+import WorkoutPage from "./pages/WorkoutPage";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
           index
           element={
             <RequireAuth>
-              <div></div>
+              <WorkoutPage />
             </RequireAuth>
           }
         />

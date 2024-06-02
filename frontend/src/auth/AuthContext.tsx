@@ -9,7 +9,8 @@ interface AuthContextType {
   signIn: (
     email: string,
     password: string,
-    callback: () => void
+    callback: () => void,
+    onFailure: (message: string) => void
   ) => Promise<void>;
   signOut: (callback: () => void) => Promise<void>;
 }
@@ -29,15 +30,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (
     email: string,
     password: string,
-    callback: () => void
+    callback: () => void,
+    onFailure: (message: string) => void
   ): Promise<void> => {
-    return auth.signIn(email, password, ({ userId }: { userId: string }) => {
-      setEmail(email);
-      setRole(auth.role);
-      setUserId(userId);
-      setAuthenticated(true);
-      callback();
-    });
+    return auth.signIn(
+      email,
+      password,
+      ({ userId }: { userId: string }) => {
+        setEmail(email);
+        setRole(auth.role);
+        setUserId(userId);
+        setAuthenticated(true);
+        callback();
+      },
+      onFailure
+    );
   };
 
   const signOut = async (callback: () => void): Promise<void> => {
