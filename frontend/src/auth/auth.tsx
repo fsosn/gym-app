@@ -10,7 +10,8 @@ interface Auth {
   signIn: (
     email: string,
     password: string,
-    callback: (data: { userId: string; token: string }) => void
+    callback: (data: { userId: string; token: string }) => void,
+    onFailure: (message: string) => void
   ) => Promise<void>;
   signOut: (callback: () => void) => void;
   register: (
@@ -35,7 +36,8 @@ const auth: Auth = {
   signIn: async (
     email: string,
     password: string,
-    callback: (data: { userId: string; token: string }) => void
+    callback: (data: { userId: string; token: string }) => void,
+    onFailure: (message: string) => void
   ): Promise<void> => {
     try {
       const response = await axios.post(
@@ -70,7 +72,7 @@ const auth: Auth = {
 
       callback({ userId, token });
     } catch (e) {
-      alert("Authentication failed");
+      onFailure("Please check your credentials and try again");
       console.error("Authentication failed: ", e);
     }
   },
