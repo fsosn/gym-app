@@ -4,7 +4,7 @@ import WorkoutCard from "./WorkoutCard";
 
 export default function Workout() {
   return (
-    <div>
+    <div className="px-4 py-6 md:px-6 lg:px-8">
       <h1 className="text-3xl font-bold mb-4">Workout</h1>
       <div className="space-y-6">
         <div>
