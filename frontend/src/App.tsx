@@ -5,6 +5,8 @@ import { RegisterForm } from "./components/auth/RegisterForm";
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "./auth/RequireAuth";
 import WorkoutPage from "./pages/WorkoutPage";
+import WorkoutLogPage from "./pages/WorkoutLogPage";
+import { WorkoutLog } from "./components/workout/WorkoutLog";
 
 function App() {
   return (
@@ -15,7 +17,8 @@ function App() {
           index
           element={
             <RequireAuth>
-              <WorkoutPage />
+              {/* <WorkoutPage /> */}
+              <WorkoutLog />
             </RequireAuth>
           }
         />

@@ -3,4 +3,6 @@ export const API_ENDPOINTS = {
   LOGIN: "/login",
   REGISTER: "/register",
   DETAILS: "/check-account-details",
+  EXERCISES: "/exercises",
+  WORKOUTS: "/workouts",
 } as const;
