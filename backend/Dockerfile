@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -11,12 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-CMD ["sh", "-c", "\
-    if [ ! -d 'migrations' ]; then \
-    flask db init; \
-    fi && \
-    flask db stamp head && \
-    flask db migrate && \
-    flask db upgrade && \
-    flask run --host=0.0.0.0 --port=5000 \
-    "]
+CMD ["sh", "-c", "flask db upgrade && flask run --host=0.0.0.0 --port=5000"]
