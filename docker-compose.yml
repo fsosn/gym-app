@@ -1,0 +1,40 @@
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        environment:
+            - FLASK_ENV=development
+            - FLASK_APP=run.py
+            - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/gym_db
+            - SECRET_KEY=secretkey
+            - JWT_SECRET_KEY=jwtsecretkey
+        depends_on:
+            - db
+        volumes:
+            - ./backend:/app
+
+    db:
+        image: postgres:13
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: gym_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports:
+            - "5173:5173"
+        environment:
+            - NODE_ENV=development
+
+volumes:
+    postgres_data:

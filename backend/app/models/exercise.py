@@ -2,7 +2,7 @@ from app.extensions import db
 from enum import Enum
 
 
-class MuscleCategory(Enum):
+class MuscleCategory(str, Enum):
     ABDOMINALS = "Abdominals"
     ABDUCTORS = "Abductors"
     ADDUCTORS = "Adductors"
@@ -25,7 +25,7 @@ class MuscleCategory(Enum):
     OTHER = "Other"
 
 
-class Equipment(Enum):
+class Equipment(str, Enum):
     NONE = "None"
     BARBELL = "Barbell"
     DUMBBELL = "Dumbbell"
@@ -37,7 +37,7 @@ class Equipment(Enum):
     OTHER = "Other"
 
 
-class ExerciseType(Enum):
+class ExerciseType(str, Enum):
     WEIGHT_REPS = "Weight & Reps"
     BODYWEIGHT_REPS = "Bodyweight Reps"
     WEIGHTED_BODYWEIGHT = "Weighted Bodyweight"
