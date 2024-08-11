@@ -43,12 +43,16 @@ Currently working on adding new features and improving functionality! 📈🚀
 
 ### See The App!
 
-<img src="https://i.imgur.com/4WbxAfT.png" width=250>
-<img src="https://i.imgur.com/IRHRX5T.png" width=250>
-<img src="https://i.imgur.com/8jJwGrx.png" width=250>
-<img src="https://i.imgur.com/VTxVmGZ.png" width=250>
-<img src="https://i.imgur.com/iy8U42T.png" width=250>
-<img src="https://i.imgur.com/N1cIe9d.png" width=250>
+<p float="left">
+    <img src="https://i.imgur.com/4WbxAfT.png" width=250>
+    <img src="https://i.imgur.com/IRHRX5T.png" width=250>
+    <img src="https://i.imgur.com/8jJwGrx.png" width=250>
+</p>
+<p float="left">
+    <img src="https://i.imgur.com/VTxVmGZ.png" width=250>
+    <img src="https://i.imgur.com/iy8U42T.png" width=250>
+    <img src="https://i.imgur.com/N1cIe9d.png" width=250>
+</p>
 
 ## Built With
 
