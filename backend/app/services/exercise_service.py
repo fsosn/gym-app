@@ -1,9 +1,18 @@
-from ..models.exercise import Exercise, MuscleCategory, Equipment, ExerciseType
-from ..extensions import db
+from app.models.exercise import (
+    Exercise,
+    MuscleCategory,
+    Equipment,
+    ExerciseType,
+)
+from app.extensions import db
 
 
-def create_exercise(title, primary_muscle, other_muscles, equipment, exercise_type):
-    if not __check_enums(primary_muscle, other_muscles, equipment, exercise_type):
+def create_exercise(
+    title, primary_muscle, other_muscles, equipment, exercise_type
+):
+    if not __check_enums(
+        primary_muscle, other_muscles, equipment, exercise_type
+    ):
         return None, "Exercise parameters not valid."
 
     new_exercise = Exercise(
@@ -32,7 +41,9 @@ def update_exercise(
     exercise = Exercise.query.get(exercise_id)
     if not exercise:
         return None, True, "Exercise not found."
-    if not __check_enums(primary_muscle, other_muscles, equipment, exercise_type):
+    if not __check_enums(
+        primary_muscle, other_muscles, equipment, exercise_type
+    ):
         return None, False, "Exercise parameters not valid."
 
     exercise.title = title

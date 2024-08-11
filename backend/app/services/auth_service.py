@@ -1,7 +1,7 @@
-from ..models.user import User
-from ..extensions import db
+from app.models.user import User
+from app.extensions import db
 from flask_jwt_extended import create_access_token
-from .utils.validate import validate_register, validate_login
+from app.utils.validate import validate_register, validate_login
 
 
 def register(first_name, last_name, email, password):

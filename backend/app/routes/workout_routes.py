@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from ..services import workout_service
+from app.services import workout_service
 
 workout_bp = Blueprint("workout_bp", __name__)
 
@@ -21,7 +21,9 @@ def get_workout(workout_id):
     identity = get_jwt_identity()
     user_id = identity.get("id")
     role = identity.get("role")
-    result, status_code = workout_service.get_workout_by_id(workout_id, user_id, role)
+    result, status_code = workout_service.get_workout_by_id(
+        workout_id, user_id, role
+    )
     return jsonify(result), status_code
 
 
@@ -55,5 +57,7 @@ def delete_workout(workout_id):
     identity = get_jwt_identity()
     user_id = identity.get("id")
     role = identity.get("role")
-    result, status_code = workout_service.delete_workout(workout_id, user_id, role)
+    result, status_code = workout_service.delete_workout(
+        workout_id, user_id, role
+    )
     return jsonify(result), status_code
