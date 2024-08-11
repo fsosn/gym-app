@@ -1,4 +1,4 @@
-from ..extensions import db
+from app.extensions import db
 
 
 class Workout(db.Model):
@@ -10,5 +10,8 @@ class Workout(db.Model):
     time = db.Column(db.String(10))
     volume = db.Column(db.Float, default=0)
     exercises = db.relationship(
-        "WorkoutExercise", backref="workout", lazy=True, cascade="all, delete-orphan"
+        "WorkoutExercise",
+        backref="workout",
+        lazy=True,
+        cascade="all, delete-orphan",
     )

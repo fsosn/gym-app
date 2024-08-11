@@ -1,7 +1,7 @@
-from ..models.workout import Workout
-from ..models.workout_exercise import WorkoutExercise
-from ..models.set import Set
-from ..extensions import db
+from app.models.workout import Workout
+from app.models.workout_exercise import WorkoutExercise
+from app.models.set import Set
+from app.extensions import db
 
 
 def create_workout(data, user_id):

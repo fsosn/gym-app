@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from ..services import exercise_service
+from app.services import exercise_service
 from flask_jwt_extended import jwt_required
-from ..decorators import admin_required
+from app.decorators import admin_required
 
 exercise_bp = Blueprint("exercise", __name__)
 
@@ -65,7 +65,9 @@ def get_all_exercises():
                     "id": exercise.id,
                     "title": exercise.title,
                     "primary_muscle": exercise.primary_muscle,
-                    "other_muscles": [muscle for muscle in exercise.other_muscles],
+                    "other_muscles": [
+                        muscle for muscle in exercise.other_muscles
+                    ],
                     "equipment": exercise.equipment,
                     "exercise_type": exercise.exercise_type,
                 }

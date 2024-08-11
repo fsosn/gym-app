@@ -1,8 +1,8 @@
-from ..extensions import db
-from enum import StrEnum
+from app.extensions import db
+from enum import Enum
 
 
-class MuscleCategory(StrEnum):
+class MuscleCategory(Enum):
     ABDOMINALS = "Abdominals"
     ABDUCTORS = "Abductors"
     ADDUCTORS = "Adductors"
@@ -25,7 +25,7 @@ class MuscleCategory(StrEnum):
     OTHER = "Other"
 
 
-class Equipment(StrEnum):
+class Equipment(Enum):
     NONE = "None"
     BARBELL = "Barbell"
     DUMBBELL = "Dumbbell"
@@ -37,7 +37,7 @@ class Equipment(StrEnum):
     OTHER = "Other"
 
 
-class ExerciseType(StrEnum):
+class ExerciseType(Enum):
     WEIGHT_REPS = "Weight & Reps"
     BODYWEIGHT_REPS = "Bodyweight Reps"
     WEIGHTED_BODYWEIGHT = "Weighted Bodyweight"

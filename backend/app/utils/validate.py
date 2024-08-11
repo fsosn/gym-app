@@ -6,10 +6,16 @@ def validate_register(first_name, last_name, email, password):
         return False, "First name, last name, email and password are required."
 
     if len(first_name) < 2 or len(last_name) < 2:
-        return False, "First name and last name must be at least 2 characters long."
+        return (
+            False,
+            "First name and last name must be at least 2 characters long.",
+        )
 
     if len(first_name) > 50 or len(last_name) > 50:
-        return False, "First name and last name must be maximum 50 characters long."
+        return (
+            False,
+            "First name and last name must be maximum 50 characters long.",
+        )
 
     valid_email, email_message = validate_email(email)
 
