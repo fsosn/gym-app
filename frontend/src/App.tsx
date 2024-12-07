@@ -16,7 +16,14 @@ function App() {
                     index
                     element={
                         <RequireAuth>
-                            {/* <WorkoutPage /> */}
+                            <WorkoutPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/workout-log"
+                    element={
+                        <RequireAuth>
                             <WorkoutLog />
                         </RequireAuth>
                     }
