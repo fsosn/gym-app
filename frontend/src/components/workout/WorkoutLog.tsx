@@ -17,7 +17,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { LeftArrowIcon } from "../ui/leftArrowIcon";
 import {
     Dialog,
     DialogContent,
@@ -30,6 +29,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { API_ENDPOINTS } from "../../config.tsx";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Exercise {
     title: string;
@@ -46,10 +47,40 @@ interface Set {
 
 export function WorkoutLog() {
     const [duration, setDuration] = useState(0);
-    const [exercises, setExercises] = useState<Exercise[] | null>(null);
+    const [exercises, setExercises] = useState<Exercise[] | null>(() =>
+        JSON.parse(localStorage.getItem("workoutLog") || "null")
+    );
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
         useState(false);
     const [title, setTitle] = useState("");
+    const [startTime, setStartTime] = useState<number | null>(() =>
+        JSON.parse(localStorage.getItem("workoutStartTime") || "null")
+    );
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!startTime) {
+            const now = Date.now();
+            setStartTime(now);
+            localStorage.setItem("workoutStartTime", JSON.stringify(now));
+        } else {
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            setDuration(elapsed);
+        }
+    }, [startTime]);
+
+    useEffect(() => {
+        const workoutData = {
+            title,
+            exercises,
+        };
+        localStorage.setItem(
+            "workoutLog",
+            JSON.stringify(workoutData.exercises)
+        );
+    }, [exercises, title]);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -162,18 +193,41 @@ export function WorkoutLog() {
         }
     };
 
+    const deleteCurrentWorkout = () => {
+        localStorage.removeItem("workoutLog");
+        localStorage.removeItem("workoutStartTime");
+    };
+
+    const handleGoBackButtonClick = () => {
+        if (!exercises || exercises.length === 0) {
+            deleteCurrentWorkout();
+        }
+        navigate("/");
+    };
+
+    const handleDiscardWorkoutButtonClick = () => {
+        deleteCurrentWorkout();
+        navigate("/");
+    };
+
     return (
         <div>
             <nav className="w-full flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-zinc-700">
-                <Button size="sm" variant="secondary">
-                    <LeftArrowIcon className="w-4 h-4" />
+                <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={handleGoBackButtonClick}
+                >
+                    <ArrowLeft className="w-4 h-4" />
                 </Button>
                 <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
                     Workout Log
                 </h1>
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button>Finish</Button>
+                        <Button disabled={completedSetsCount === 0}>
+                            Finish
+                        </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
@@ -302,7 +356,12 @@ export function WorkoutLog() {
                                     <AlertDialogCancel>
                                         Go Back
                                     </AlertDialogCancel>
-                                    <AlertDialogAction>
+                                    <AlertDialogAction
+                                        className="bg-red-800 text-white border-red-900 hover:bg-red-700"
+                                        onClick={
+                                            handleDiscardWorkoutButtonClick
+                                        }
+                                    >
                                         Discard Workout
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
