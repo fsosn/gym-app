@@ -3,7 +3,6 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/plusIcon";
 import { TrashIcon } from "@/components/ui/trashIcon";
-import { ExerciseCard } from "@/components/workout/ExerciseCard";
 import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
 import { ExerciseRecord } from "@/types/exercise_types.tsx";
 import {
@@ -31,6 +30,8 @@ import { Label } from "@/components/ui/label";
 import { API_ENDPOINTS } from "../../config.tsx";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { WorkoutSummaryCards } from "./WorkoutSummaryCards.tsx";
+import { ExerciseList } from "./ExerciseList.tsx";
 
 interface Exercise {
     id: number;
@@ -191,6 +192,9 @@ export function WorkoutLog() {
             console.error("Error saving workout:", error);
             alert("Error saving workout.");
         }
+
+        deleteCurrentWorkout();
+        navigate("/");
     };
 
     const deleteCurrentWorkout = () => {
@@ -259,61 +263,19 @@ export function WorkoutLog() {
                 </Dialog>
             </nav>
             <div className="p-2">
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Duration
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {formatDuration(duration)}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Volume
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {totalVolume} kg
-                            </span>
-                        </div>
-                    </div>
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Sets
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {completedSetsCount}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div />
+                <WorkoutSummaryCards
+                    duration={duration}
+                    totalVolume={totalVolume}
+                    completedSets={completedSetsCount}
+                />
             </div>
             <div className="flex flex-col items-center">
                 <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
-                    {exercises &&
-                        exercises.length > 0 &&
-                        exercises.map((exercise, index) => (
-                            <ExerciseCard
-                                key={index}
-                                exerciseName={exercise.title}
-                                sets={exercise.sets}
-                                onSetsChange={(newSets) =>
-                                    handleExerciseChange(index, newSets)
-                                }
-                                onDelete={() => handleDeleteExercise(index)}
-                            />
-                        ))}
+                    <ExerciseList
+                        exercises={exercises}
+                        onExerciseChange={handleExerciseChange}
+                        onDelete={handleDeleteExercise}
+                    />
                     <div className="m-2 mt-2">
                         <Button
                             onClick={() => setShowExerciseSelectionModal(true)}

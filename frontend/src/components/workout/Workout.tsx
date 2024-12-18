@@ -33,6 +33,10 @@ export default function Workout() {
         navigate("/workout-log");
     };
 
+    const handleCreateRoutineButtonClick = () => {
+        navigate("/create-routine");
+    };
+
     const handleStartRoutineButtonClick = async (routineId: number) => {
         try {
             const routine = await fetchRoutine(routineId);
@@ -77,7 +81,10 @@ export default function Workout() {
                 </div>
                 <div>
                     <h2 className="text-xl font-semibold mb-4">Routines</h2>
-                    <Button className="mb-4">
+                    <Button
+                        className="mb-4"
+                        onClick={handleCreateRoutineButtonClick}
+                    >
                         <div className="flex items-center space-x-2">
                             <Plus className="w-4 h-4" />
                             <span>Create routine</span>

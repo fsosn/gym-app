@@ -24,7 +24,6 @@ def create_routine(data, user_id):
             routine_exercise = RoutineExercise(
                 routine_id=routine.id,
                 exercise_id=exercise_data["exercise_id"],
-                position=exercise_data["position"],
             )
             db.session.add(routine_exercise)
             db.session.flush()
@@ -68,7 +67,6 @@ def get_routine_by_id(routine_id, user_id):
             {
                 "id": re.id,
                 "title": Exercise.query.get(re.exercise_id).title,
-                "position": re.position,
                 "sets": [
                     {
                         "id": rs.id,

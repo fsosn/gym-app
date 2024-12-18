@@ -10,7 +10,6 @@ class RoutineExercise(db.Model):
     exercise_id = db.Column(
         db.Integer, db.ForeignKey("exercise.id"), nullable=False
     )
-    position = db.Column(db.Integer, nullable=False)
     sets = db.relationship(
         "RoutineSet",
         backref="routine_exercise",
