@@ -5,7 +5,7 @@ import { PlusIcon } from "@/components/ui/plusIcon";
 import { TrashIcon } from "@/components/ui/trashIcon";
 import { ExerciseCard } from "@/components/workout/ExerciseCard";
 import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { ExerciseRecord } from "@/types/types.tsx";
+import { ExerciseRecord } from "@/types/exercise_types.tsx";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -33,9 +33,9 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Exercise {
+    id: number;
     title: string;
     sets: Set[];
-    id: number;
 }
 
 interface Set {

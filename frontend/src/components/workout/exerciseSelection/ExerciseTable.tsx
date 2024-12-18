@@ -6,7 +6,7 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table";
-import { ExerciseRecord } from "@/types/types";
+import { ExerciseRecord } from "@/types/exercise_types";
 
 interface ExerciseTableProps {
     exercises: ExerciseRecord[];

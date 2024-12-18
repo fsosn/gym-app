@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from "@/config";
 import { Button } from "@/components/ui/button";
 import ExerciseFilters from "./ExerciseFilters";
 import ExerciseTable from "./ExerciseTable";
-import { ExerciseRecord, ExerciseApiResponse } from "@/types/types";
+import { ExerciseRecord, ExerciseApiResponse } from "@/types/exercise_types";
 
 interface ExerciseSelectionProps {
     onAddExercises: (exercises: ExerciseRecord[]) => void;
