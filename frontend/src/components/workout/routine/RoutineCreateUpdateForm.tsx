@@ -1,10 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { API_ENDPOINTS } from "@/config.tsx";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@/components/ui/plusIcon";
-import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { ExerciseRecord } from "@/types/exercise_types.tsx";
+import { ArrowLeft, Plus } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -14,11 +11,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { ExerciseList } from "@/components/workout/ExerciseList";
+import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
+import { ExerciseRecord } from "@/types/exercise_types.tsx";
+import { API_ENDPOINTS } from "@/config.tsx";
 
 interface Exercise {
     id: number;
@@ -30,16 +29,50 @@ interface Set {
     weight: string;
     reps: string;
     completed: boolean;
-    selected: boolean;
 }
 
-export function RoutineCreateForm() {
+export function RoutineCreateUpdateForm() {
+    const { routineId } = useParams();
+    const [isUpdateMode, setIsUpdateMode] = useState(false);
+
     const [exercises, setExercises] = useState<Exercise[] | null>(null);
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
         useState(false);
+    const [displayedTitle, setDisplayedTitle] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (routineId) {
+            setIsUpdateMode(true);
+            const fetchRoutineDetails = async () => {
+                try {
+                    const routine = await axios.get(
+                        `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}/${routineId}`
+                    );
+                    console.log(routine.data);
+                    setDisplayedTitle(routine.data.title);
+                    setTitle(routine.data.title);
+                    setDescription(routine.data.description);
+                    setExercises(
+                        routine.data.exercises.map((exercise: any) => ({
+                            id: exercise.id,
+                            title: exercise.title,
+                            sets: exercise.sets.map((set: any) => ({
+                                weight: set.weight.toString(),
+                                reps: set.reps.toString(),
+                                completed: false,
+                            })),
+                        }))
+                    );
+                } catch (error) {
+                    console.error("Failed to fetch routine:", error);
+                }
+            };
+            fetchRoutineDetails();
+        }
+    }, [routineId]);
 
     const handleExerciseChange = (index: number, newSets: Set[]) => {
         if (!exercises) return;
@@ -60,20 +93,21 @@ export function RoutineCreateForm() {
             ...selectedExercises.map((exercise) => ({
                 title: exercise.title,
                 id: exercise.id,
-                sets: [
-                    { weight: "", reps: "", completed: false, selected: false },
-                ],
+                sets: [{ weight: "", reps: "", completed: false }],
             })),
         ];
         setExercises(newExercises);
         setShowExerciseSelectionModal(false);
     };
 
-    const handleCreateButtonClick = async () => {
+    const handleCreateOrUpdateButtonClick = async () => {
         if (!title || !exercises || exercises.length === 0) {
             alert("Please provide a title and add at least one exercise.");
             return;
         }
+
+        console.log(exercises);
+        console.log(title);
 
         const routineData = {
             title,
@@ -88,18 +122,25 @@ export function RoutineCreateForm() {
                 })),
             })),
         };
+        console.log(routineData);
 
         try {
-            axios.post(
-                `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}`,
-                routineData
-            );
+            if (isUpdateMode) {
+                await axios.put(
+                    `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}/${routineId}`,
+                    routineData
+                );
+            } else {
+                await axios.post(
+                    `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}`,
+                    routineData
+                );
+            }
+            navigate("/");
         } catch (error) {
-            console.error("Error saving workout:", error);
-            alert("Error saving workout.");
+            console.error("Error while saving workout:", error);
+            alert("Error while saving workout.");
         }
-
-        navigate("/");
     };
 
     const handleGoBackButtonClick = () => {
@@ -117,17 +158,19 @@ export function RoutineCreateForm() {
                     <ArrowLeft className="w-4 h-4" />
                 </Button>
                 <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
-                    Routine
+                    {isUpdateMode ? displayedTitle : "Routine"}
                 </h1>
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button disabled={exercises?.length === 0}>
-                            Create
+                            {isUpdateMode ? "Update" : "Create"}
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Create Routine</DialogTitle>
+                            <DialogTitle>
+                                {isUpdateMode ? "Update" : "Create"} Routine
+                            </DialogTitle>
                             <DialogDescription>
                                 Please add a title and/or description for your
                                 routine. Click save when you're done.
@@ -163,7 +206,7 @@ export function RoutineCreateForm() {
                         <DialogFooter>
                             <Button
                                 type="button"
-                                onClick={handleCreateButtonClick}
+                                onClick={handleCreateOrUpdateButtonClick}
                             >
                                 Save
                             </Button>
@@ -183,7 +226,7 @@ export function RoutineCreateForm() {
                             onClick={() => setShowExerciseSelectionModal(true)}
                             className="w-full"
                         >
-                            <PlusIcon className="w-4 h-4 mr-1" />
+                            <Plus className="w-4 h-4 mr-1" />
                             <span>Add Exercise</span>
                         </Button>
                         {showExerciseSelectionModal && (

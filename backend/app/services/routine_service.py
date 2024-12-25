@@ -65,11 +65,10 @@ def get_routine_by_id(routine_id, user_id):
         "description": routine.description,
         "exercises": [
             {
-                "id": re.id,
+                "id": re.exercise_id,
                 "title": Exercise.query.get(re.exercise_id).title,
                 "sets": [
                     {
-                        "id": rs.id,
                         "reps": rs.reps,
                         "weight": rs.weight,
                         "distance": rs.distance,
@@ -97,19 +96,45 @@ def get_all_routines(user_id):
     return routines_data, 200
 
 
-def update_routine(routine_id, user_id, title, description):
-    routine = Routine.query.filter_by(id=routine_id, user_id=user_id).first()
-    if not routine:
-        return {"error": "Routine not found"}, 404
-
-    if title:
-        routine.title = title
-    if description:
-        routine.description = description
-
+def update_routine(routine_id, data, user_id):
     try:
+        routine = Routine.query.filter_by(
+            id=routine_id, user_id=user_id
+        ).first()
+        if not routine:
+            return {"error": "Routine not found"}, 404
+
+        routine.title = data.get("title", routine.title)
+        routine.description = data.get("description", routine.description)
+
+        for routine_exercise in routine.exercises:
+            for routine_set in routine_exercise.sets:
+                db.session.delete(routine_set)
+            db.session.delete(routine_exercise)
+
+        db.session.flush()
+
+        for exercise_data in data["exercises"]:
+            routine_exercise = RoutineExercise(
+                routine_id=routine.id,
+                exercise_id=exercise_data["exercise_id"],
+            )
+            db.session.add(routine_exercise)
+            db.session.flush()
+
+            for set_data in exercise_data["sets"]:
+                routine_set = RoutineSet(
+                    routine_exercise_id=routine_exercise.id,
+                    reps=set_data.get("reps", 0),
+                    weight=set_data.get("weight", 0),
+                    distance=set_data.get("distance", 0),
+                    duration=set_data.get("duration", "00:00"),
+                )
+                db.session.add(routine_set)
+
         db.session.commit()
         return {"message": "Routine updated successfully"}, 200
+
     except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": str(e)}, 500

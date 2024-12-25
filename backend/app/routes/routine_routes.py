@@ -44,8 +44,7 @@ def update_routine(routine_id):
     result, status_code = routine_service.update_routine(
         routine_id=routine_id,
         user_id=user_id,
-        title=data.get("title"),
-        description=data.get("description"),
+        data=data,
     )
     return jsonify(result), status_code
 

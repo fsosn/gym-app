@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/plusIcon";
 import { TrashIcon } from "@/components/ui/trashIcon";
 import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { ExerciseRecord } from "@/types/exercise_types.tsx";
+import { Exercise } from "@/types/exercise_types.tsx";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -147,7 +147,7 @@ export function WorkoutLog() {
         setExercises(newExercises);
     };
 
-    const handleAddExercisesToLog = (selectedExercises: ExerciseRecord[]) => {
+    const handleAddExercisesToLog = (selectedExercises: Exercise[]) => {
         const newExercises = [
             ...(exercises || []),
             ...selectedExercises.map((exercise) => ({

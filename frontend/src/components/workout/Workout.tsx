@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
-import RoutineCard from "./routine/RoutineCard";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Play, Plus } from "lucide-react";
-import { fetchRoutine, fetchRoutines } from "@/services/routines.tsx";
+import { Button } from "@/components/ui/button";
+import RoutineCard from "@/components/workout/routine/RoutineCard";
 import { Routine } from "@/types/routine_types.tsx";
+import { fetchRoutine, fetchRoutines } from "@/services/routines.tsx";
 
 export default function Workout() {
     const [hasOngoingWorkout, setHasOngoingWorkout] = useState(false);
@@ -34,7 +34,11 @@ export default function Workout() {
     };
 
     const handleCreateRoutineButtonClick = () => {
-        navigate("/create-routine");
+        navigate("/routine");
+    };
+
+    const handleRoutineCardClick = (routineId: number) => {
+        navigate(`/routine/${routineId}`);
     };
 
     const handleStartRoutineButtonClick = async (routineId: number) => {
@@ -98,6 +102,9 @@ export default function Workout() {
                                 description={routine.description}
                                 onStart={() =>
                                     handleStartRoutineButtonClick(routine.id)
+                                }
+                                onRoutineCardClick={() =>
+                                    handleRoutineCardClick(routine.id)
                                 }
                             />
                         ))}

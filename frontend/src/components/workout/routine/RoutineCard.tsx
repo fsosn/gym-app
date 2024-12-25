@@ -11,15 +11,20 @@ interface RoutineCardProps {
     title: string;
     description: string;
     onStart: () => void;
+    onRoutineCardClick: () => void;
 }
 
 const RoutineCard: React.FC<RoutineCardProps> = ({
     title,
     description,
     onStart,
+    onRoutineCardClick,
 }) => {
     return (
-        <Card>
+        <Card
+            onClick={onRoutineCardClick}
+            className="hover:bg-zinc-900 cursor-pointer"
+        >
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{description}</CardDescription>

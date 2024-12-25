@@ -1,8 +1,8 @@
-import { ExerciseRecord } from "./exercise_types";
+import { Exercise } from "./exercise_types";
 
 export interface Routine {
     id: number;
     title: string;
     description: string;
-    exercises: ExerciseRecord[];
+    exercises: Exercise[];
 }

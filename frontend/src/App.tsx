@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "./auth/RequireAuth";
 import WorkoutPage from "./pages/WorkoutPage";
 import { WorkoutLog } from "./components/workout/WorkoutLog";
-import { RoutineCreateForm } from "./components/workout/routine/RoutineCreateForm";
+import { RoutineCreateUpdateForm } from "./components/workout/routine/RoutineCreateUpdateForm";
 
 function App() {
     return (
@@ -30,13 +30,21 @@ function App() {
                     }
                 />
                 <Route
-                    path="/create-routine"
+                    path="/routine"
                     element={
                         <RequireAuth>
-                            <RoutineCreateForm />
+                            <RoutineCreateUpdateForm />
                         </RequireAuth>
                     }
                 ></Route>
+                <Route
+                    path="/routine/:routineId"
+                    element={
+                        <RequireAuth>
+                            <RoutineCreateUpdateForm />
+                        </RequireAuth>
+                    }
+                />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/sign-up" element={<RegisterForm />} />
             </Routes>

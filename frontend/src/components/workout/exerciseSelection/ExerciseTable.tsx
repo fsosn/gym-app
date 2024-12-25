@@ -6,12 +6,12 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table";
-import { ExerciseRecord } from "@/types/exercise_types";
+import { Exercise } from "@/types/exercise_types";
 
 interface ExerciseTableProps {
-    exercises: ExerciseRecord[];
-    selectedExercises: ExerciseRecord[];
-    toggleSelection: (exercise: ExerciseRecord) => void;
+    exercises: Exercise[];
+    selectedExercises: Exercise[];
+    toggleSelection: (exercise: Exercise) => void;
 }
 
 const ExerciseTable: React.FC<ExerciseTableProps> = ({
@@ -19,7 +19,7 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
     selectedExercises,
     toggleSelection,
 }) => {
-    const isExerciseSelected = (exercise: ExerciseRecord) =>
+    const isExerciseSelected = (exercise: Exercise) =>
         selectedExercises.some((selected) => selected.id === exercise.id);
 
     return (
