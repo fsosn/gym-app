@@ -10,10 +10,11 @@ from app.extensions import db
 def create_exercise(
     title, primary_muscle, other_muscles, equipment, exercise_type
 ):
-    if not __check_enums(
+    valid, message = __check_enums(
         primary_muscle, other_muscles, equipment, exercise_type
-    ):
-        return None, "Exercise parameters not valid."
+    )
+    if not valid:
+        return None, message
 
     new_exercise = Exercise(
         title=title,
@@ -67,14 +68,17 @@ def delete_exercise(exercise_id):
 
 
 def __check_enums(primary_muscle, other_muscles, equipment, exercise_type):
-    if not (primary_muscle in MuscleCategory):
-        return False
-    for muscle in other_muscles:
-        if not (muscle in MuscleCategory):
-            return False
-    if not (equipment in Equipment):
-        return False
-    if not (exercise_type in ExerciseType):
-        return False
+    if primary_muscle not in MuscleCategory._value2member_map_:
+        return False, "Invalid primary_muscle value."
 
-    return True
+    for muscle in other_muscles:
+        if muscle not in MuscleCategory._value2member_map_:
+            return False, f"Invalid muscle value: {muscle}."
+
+    if equipment not in Equipment._value2member_map_:
+        return False, "Invalid equipment value."
+
+    if exercise_type not in ExerciseType._value2member_map_:
+        return False, "Invalid exercise_type value."
+
+    return True, "All parameters are valid."

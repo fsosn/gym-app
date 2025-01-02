@@ -44,13 +44,24 @@ export enum ExerciseType {
     WEIGHT_DISTANCE = "Weight & Distance",
 }
 
-export interface ExerciseRecord {
+interface BaseExercise {
     id: number;
     title: string;
+}
+
+export interface Exercise extends BaseExercise {
     primary_muscle: string;
     other_muscles: string[];
     equipment: string;
     exercise_type: string;
 }
 
-export interface ExerciseApiResponse extends ExerciseRecord {}
+export interface Set {
+    weight: string;
+    reps: string;
+    completed: boolean;
+}
+
+export interface ExerciseRecord extends BaseExercise {
+    sets: Set[];
+}

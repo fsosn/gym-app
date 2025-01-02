@@ -1,63 +1,28 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@/components/ui/plusIcon";
-import { TrashIcon } from "@/components/ui/trashIcon";
-import { ExerciseCard } from "@/components/workout/ExerciseCard";
-import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { ExerciseRecord } from "@/types/types.tsx";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { API_ENDPOINTS } from "../../config.tsx";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface Exercise {
-    title: string;
-    sets: Set[];
-    id: number;
-}
-
-interface Set {
-    weight: string;
-    reps: string;
-    completed: boolean;
-    selected: boolean;
-}
+import { ArrowLeft, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
+import { WorkoutSummaryCards } from "@/components/workout/WorkoutSummaryCards.tsx";
+import { ExerciseList } from "@/components/workout/ExerciseList.tsx";
+import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard.tsx";
+import DialogSave from "@/components/workout/DialogSave.tsx";
+import { useExerciseList } from "@/hooks/useExerciseList.tsx";
+import { postWorkout } from "@/services/workouts";
+import { useToast } from "@/hooks/use-toast";
 
 export function WorkoutLog() {
     const [duration, setDuration] = useState(0);
-    const [exercises, setExercises] = useState<Exercise[] | null>(() =>
-        JSON.parse(localStorage.getItem("workoutLog") || "null")
-    );
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
         useState(false);
     const [title, setTitle] = useState("");
     const [startTime, setStartTime] = useState<number | null>(() =>
         JSON.parse(localStorage.getItem("workoutStartTime") || "null")
     );
-
+    const { exercises, updateExercise, deleteExercise, addExercises } =
+        useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (!startTime) {
@@ -133,37 +98,13 @@ export function WorkoutLog() {
         }
     };
 
-    const handleExerciseChange = (index: number, newSets: Set[]) => {
-        if (!exercises) return;
-        const newExercises = [...exercises];
-        newExercises[index].sets = newSets;
-        setExercises(newExercises);
-    };
-
-    const handleDeleteExercise = (index: number) => {
-        if (!exercises) return;
-        const newExercises = exercises.filter((_, i) => i !== index);
-        setExercises(newExercises);
-    };
-
-    const handleAddExercisesToLog = (selectedExercises: ExerciseRecord[]) => {
-        const newExercises = [
-            ...(exercises || []),
-            ...selectedExercises.map((exercise) => ({
-                title: exercise.title,
-                id: exercise.id,
-                sets: [
-                    { weight: "", reps: "", completed: false, selected: false },
-                ],
-            })),
-        ];
-        setExercises(newExercises);
-        setShowExerciseSelectionModal(false);
-    };
-
     const handleSaveWorkout = async () => {
         if (!title || !exercises || exercises.length === 0) {
-            alert("Please provide a title and add at least one exercise.");
+            toast({
+                title: "Incomplete Form",
+                description:
+                    "Please provide a title and add at least one exercise.",
+            });
             return;
         }
 
@@ -183,14 +124,18 @@ export function WorkoutLog() {
         };
 
         try {
-            axios.post(
-                `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}`,
-                workoutData
-            );
+            await postWorkout(workoutData);
         } catch (error) {
             console.error("Error saving workout:", error);
-            alert("Error saving workout.");
+            toast({
+                variant: "destructive",
+                title: "Something went wrong.",
+                description: "There was a problem while saving your workout.",
+            });
         }
+
+        deleteCurrentWorkout();
+        navigate("/");
     };
 
     const deleteCurrentWorkout = () => {
@@ -210,6 +155,9 @@ export function WorkoutLog() {
         navigate("/");
     };
 
+    const toggleExerciseModal = () =>
+        setShowExerciseSelectionModal((prev) => !prev);
+
     return (
         <div>
             <nav className="w-full flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-zinc-700">
@@ -223,150 +171,60 @@ export function WorkoutLog() {
                 <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
                     Workout Log
                 </h1>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button disabled={completedSetsCount === 0}>
-                            Finish
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Finish Workout</DialogTitle>
-                            <DialogDescription>
-                                Please add a title for your workout. Click save
-                                when you're done.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="title" className="text-right">
-                                    Title
-                                </Label>
-                                <Input
-                                    id="title"
-                                    className="col-span-3"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button type="button" onClick={handleSaveWorkout}>
-                                Save
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <DialogSave
+                    title={title}
+                    setTitle={setTitle}
+                    handleSave={handleSaveWorkout}
+                    buttonLabel="Finish"
+                    dialogTitle="Finish Workout"
+                    dialogDescription="Please add a title for your workout. Click save when
+                        you're done."
+                    isActive={completedSetsCount != 0}
+                    isRoutine={false}
+                    description={undefined}
+                    setDescription={() => {}}
+                />
             </nav>
             <div className="p-2">
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Duration
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {formatDuration(duration)}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Volume
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {totalVolume} kg
-                            </span>
-                        </div>
-                    </div>
-                    <div className="border border-zinc-700 rounded-lg p-2">
-                        <div>
-                            <span className="text-base font-medium text-zinc-900 dark:text-zinc-100 m-2">
-                                Sets
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-sm text-zinc-900 dark:text-zinc-100 m-2">
-                                {completedSetsCount}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div />
+                <WorkoutSummaryCards
+                    duration={duration}
+                    totalVolume={totalVolume}
+                    completedSets={completedSetsCount}
+                />
             </div>
             <div className="flex flex-col items-center">
                 <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
-                    {exercises &&
-                        exercises.length > 0 &&
-                        exercises.map((exercise, index) => (
-                            <ExerciseCard
-                                key={index}
-                                exerciseName={exercise.title}
-                                sets={exercise.sets}
-                                onSetsChange={(newSets) =>
-                                    handleExerciseChange(index, newSets)
-                                }
-                                onDelete={() => handleDeleteExercise(index)}
-                            />
-                        ))}
+                    <ExerciseList
+                        exercises={exercises}
+                        onExerciseChange={updateExercise}
+                        onDelete={deleteExercise}
+                        isWorkoutActive={true}
+                    />
                     <div className="m-2 mt-2">
                         <Button
                             onClick={() => setShowExerciseSelectionModal(true)}
                             className="w-full"
                         >
-                            <PlusIcon className="w-4 h-4 mr-1" />
+                            <Plus className="w-4 h-4 mr-1" />
                             <span>Add Exercise</span>
                         </Button>
                         {showExerciseSelectionModal && (
                             <ExerciseSelection
-                                onAddExercises={handleAddExercisesToLog}
-                                onCancel={() =>
-                                    setShowExerciseSelectionModal(false)
-                                }
+                                onAddExercises={(newExercises) => {
+                                    addExercises(newExercises);
+                                    toggleExerciseModal();
+                                }}
+                                onCancel={toggleExerciseModal}
                             />
                         )}
                     </div>
                     <div className="m-2 mt-2 pb-6">
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-full text-destructive hover:text-destructive border-red-900"
-                                >
-                                    <TrashIcon className="w-4 h-4 mr-1" />
-                                    <span>Discard Workout</span>
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Are you sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        If you discard this workout, all unsaved
-                                        changes will be lost.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Go Back
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        className="bg-red-800 text-white border-red-900 hover:bg-red-700"
-                                        onClick={
-                                            handleDiscardWorkoutButtonClick
-                                        }
-                                    >
-                                        Discard Workout
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <AlertDialogDiscard
+                            label="Discard Workout"
+                            description="If you discard this workout, all unsaved
+                                        changes will be lost."
+                            onDiscard={handleDiscardWorkoutButtonClick}
+                        />
                     </div>
                 </div>
             </div>

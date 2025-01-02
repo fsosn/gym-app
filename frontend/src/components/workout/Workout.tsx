@@ -1,11 +1,14 @@
-import { Button } from "@/components/ui/button";
-import WorkoutCard from "./WorkoutCard";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Play, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import RoutineCard from "@/components/workout/routine/RoutineCard";
+import { Routine } from "@/types/routine_types.tsx";
+import { fetchRoutine, fetchRoutines } from "@/services/routines.tsx";
 
 export default function Workout() {
     const [hasOngoingWorkout, setHasOngoingWorkout] = useState(false);
+    const [routineList, setRoutineList] = useState<Routine[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -13,19 +16,57 @@ export default function Workout() {
         setHasOngoingWorkout(!!workoutData);
     });
 
+    useEffect(() => {
+        const getRoutines = async () => {
+            try {
+                const routines = await fetchRoutines();
+                setRoutineList(routines);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        getRoutines();
+    }, []);
+
     const handleStartOrResumeWorkoutButtonClick = () => {
         navigate("/workout-log");
     };
 
+    const handleCreateRoutineButtonClick = () => {
+        navigate("/routine");
+    };
+
+    const handleRoutineCardClick = (routineId: number) => {
+        navigate(`/routine/${routineId}`);
+    };
+
+    const handleStartRoutineButtonClick = async (routineId: number) => {
+        try {
+            const routine = await fetchRoutine(routineId.toString());
+            localStorage.removeItem("workoutStartTime");
+            localStorage.setItem(
+                "workoutLog",
+                JSON.stringify(routine.exercises)
+            );
+            navigate("/workout-log");
+        } catch (error) {
+            console.error(
+                `Failed to start routine with id ${routineId}:`,
+                error
+            );
+        }
+    };
+
     return (
         <div className="px-4 py-6 md:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold mb-4">Workout</h1>
+            <h1 className="text-3xl font-bold mb-4 text-blue-500">Workout</h1>
             <div className="space-y-6">
                 <div>
                     <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
                     <Button
                         className={`inline-flex items-center space-x-2 ${
-                            hasOngoingWorkout ? "bg-blue-800 text-white" : ""
+                            hasOngoingWorkout ? "bg-blue-700 text-white" : ""
                         }`}
                         onClick={handleStartOrResumeWorkoutButtonClick}
                     >
@@ -43,34 +84,30 @@ export default function Workout() {
                     </Button>
                 </div>
                 <div>
-                    <h2 className="text-xl font-semibold mb-4">
-                        Saved Workouts
-                    </h2>
+                    <h2 className="text-xl font-semibold mb-4">Routines</h2>
+                    <Button
+                        className="mb-4"
+                        onClick={handleCreateRoutineButtonClick}
+                    >
+                        <div className="flex items-center space-x-2">
+                            <Plus className="w-4 h-4" />
+                            <span>Create routine</span>
+                        </div>
+                    </Button>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <WorkoutCard
-                            title="Full Body Workout"
-                            description="A comprehensive workout targeting all major muscle groups."
-                        />
-                        <WorkoutCard
-                            title="Cardio Blast"
-                            description="High-intensity cardio workout to get your heart pumping."
-                        />
-                        <WorkoutCard
-                            title="Strength Training"
-                            description="Build muscle and increase your overall strength."
-                        />
-                        <WorkoutCard
-                            title="Yoga Flow"
-                            description="Improve flexibility and mindfulness with this yoga routine."
-                        />
-                        <WorkoutCard
-                            title="HIIT Workout"
-                            description="High-intensity interval training to burn calories fast."
-                        />
-                        <WorkoutCard
-                            title="Pilates Core"
-                            description="Strengthen your core and improve your posture."
-                        />
+                        {routineList.map((routine) => (
+                            <RoutineCard
+                                key={routine.id}
+                                title={routine.title}
+                                description={routine.description}
+                                onStart={() =>
+                                    handleStartRoutineButtonClick(routine.id)
+                                }
+                                onRoutineCardClick={() =>
+                                    handleRoutineCardClick(routine.id)
+                                }
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

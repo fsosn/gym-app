@@ -1,11 +1,12 @@
-import "./App.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { LoginForm } from "./components/auth/LoginForm";
-import { RegisterForm } from "./components/auth/RegisterForm";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Route, Routes } from "react-router-dom";
-import { RequireAuth } from "./auth/RequireAuth";
-import WorkoutPage from "./pages/WorkoutPage";
-import { WorkoutLog } from "./components/workout/WorkoutLog";
+import { RequireAuth } from "@/auth/RequireAuth";
+import WorkoutPage from "@/pages/WorkoutPage";
+import { WorkoutLog } from "@/components/workout/WorkoutLog";
+import { RoutineForm } from "@/components/workout/routine/RoutineForm";
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
     return (
@@ -28,9 +29,26 @@ function App() {
                         </RequireAuth>
                     }
                 />
+                <Route
+                    path="/routine"
+                    element={
+                        <RequireAuth>
+                            <RoutineForm />
+                        </RequireAuth>
+                    }
+                ></Route>
+                <Route
+                    path="/routine/:routineId"
+                    element={
+                        <RequireAuth>
+                            <RoutineForm />
+                        </RequireAuth>
+                    }
+                />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/sign-up" element={<RegisterForm />} />
             </Routes>
+            <Toaster />
         </ThemeProvider>
     );
 }

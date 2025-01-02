@@ -7,20 +7,30 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface WorkoutCardProps {
+interface RoutineCardProps {
     title: string;
     description: string;
+    onStart: () => void;
+    onRoutineCardClick: () => void;
 }
 
-const WorkoutCard: React.FC<WorkoutCardProps> = ({ title, description }) => {
+const RoutineCard: React.FC<RoutineCardProps> = ({
+    title,
+    description,
+    onStart,
+    onRoutineCardClick,
+}) => {
     return (
-        <Card>
+        <Card
+            onClick={onRoutineCardClick}
+            className="hover:bg-zinc-900 cursor-pointer"
+        >
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button className="w-full">
+                <Button className="w-full" onClick={onStart}>
                     <span>Start</span>
                 </Button>
             </CardContent>
@@ -28,4 +38,4 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ title, description }) => {
     );
 };
 
-export default WorkoutCard;
+export default RoutineCard;

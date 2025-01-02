@@ -9,7 +9,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { MuscleCategory, Equipment, ExerciseType } from "@/types/types";
+import {
+    MuscleCategory,
+    Equipment,
+    ExerciseType,
+} from "@/types/exercise_types";
 import { Search } from "lucide-react";
 
 interface FiltersProps {

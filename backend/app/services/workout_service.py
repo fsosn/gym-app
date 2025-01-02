@@ -1,6 +1,7 @@
-from app.models.workout import Workout
-from app.models.workout_exercise import WorkoutExercise
-from app.models.set import Set
+from app.models.workout.workout import Workout
+from app.models.workout.workout_exercise import WorkoutExercise
+from app.models.workout.workout_set import Set
+from app.models.exercise import Exercise
 from app.extensions import db
 
 
@@ -70,6 +71,7 @@ def get_workout_by_id(workout_id, user_id, role):
             "exercises": [
                 {
                     "exercise_id": we.exercise_id,
+                    "exercise_title": Exercise.query.get(we.exercise_id).title,
                     "sets": [
                         {
                             "reps": s.reps,
@@ -103,6 +105,7 @@ def get_all_workouts(user_id, role):
             "exercises": [
                 {
                     "exercise_id": we.exercise_id,
+                    "exercise_title": Exercise.query.get(we.exercise_id).title,
                     "sets": [
                         {
                             "reps": s.reps,
