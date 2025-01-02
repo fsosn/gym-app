@@ -234,6 +234,7 @@ export function RoutineCreateUpdateForm() {
                         exercises={exercises}
                         onExerciseChange={handleExerciseChange}
                         onDelete={handleDeleteExercise}
+                        isWorkoutActive={false}
                     />
                     <div className="m-2 mt-2">
                         <Button

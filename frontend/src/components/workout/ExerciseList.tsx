@@ -1,6 +1,11 @@
 import { ExerciseCard } from "@/components/workout/ExerciseCard";
 
-export function ExerciseList({ exercises, onExerciseChange, onDelete }: any) {
+export function ExerciseList({
+    exercises,
+    onExerciseChange,
+    onDelete,
+    isWorkoutActive,
+}: any) {
     return (
         <>
             {exercises &&
@@ -14,6 +19,7 @@ export function ExerciseList({ exercises, onExerciseChange, onDelete }: any) {
                             onExerciseChange(index, newSets)
                         }
                         onDelete={() => onDelete(index)}
+                        isWorkoutActive={isWorkoutActive}
                     />
                 ))}
         </>

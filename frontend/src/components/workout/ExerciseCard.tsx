@@ -12,19 +12,18 @@ import {
 import { PlusIcon } from "@/components/ui/plusIcon";
 import { TickIcon } from "@/components/ui/tickIcon";
 import { CrossIcon } from "@/components/ui/crossIcon";
+import { Set } from "@/types/exercise_types";
 
-interface Set {
-    weight: string;
-    reps: string;
-    completed: boolean;
+interface ExerciseCardSet extends Set {
     selected: boolean;
 }
 
 interface ExerciseCardProps {
     exerciseName: string;
-    sets: Set[];
-    onSetsChange: (sets: Set[]) => void;
+    sets: ExerciseCardSet[];
+    onSetsChange: (sets: ExerciseCardSet[]) => void;
     onDelete: () => void;
+    isWorkoutActive: boolean;
 }
 
 export function ExerciseCard({
@@ -32,6 +31,7 @@ export function ExerciseCard({
     sets,
     onSetsChange,
     onDelete,
+    isWorkoutActive,
 }: ExerciseCardProps) {
     const handleAddSet = () => {
         onSetsChange([
@@ -51,10 +51,10 @@ export function ExerciseCard({
         onSetsChange(newSets);
     };
 
-    const selectedStyle = (set: Set) => {
+    const selectedStyle = (set: ExerciseCardSet) => {
         return set.completed ? "bg-green-900 hover:bg-green-800" : "";
     };
-    const selectedInputStyle = (set: Set) => {
+    const selectedInputStyle = (set: ExerciseCardSet) => {
         return set.completed ? "w-12 bg-green-950 hover:bg-green-950" : "w-12";
     };
 
@@ -82,9 +82,11 @@ export function ExerciseCard({
                             <TableHead>SET</TableHead>
                             <TableHead>WEIGHT</TableHead>
                             <TableHead>REPS</TableHead>
-                            <TableHead className="flex justify-center items-center">
-                                <TickIcon className="w-4 h-4 text-center" />
-                            </TableHead>
+                            {isWorkoutActive ? (
+                                <TableHead className="flex justify-center items-center">
+                                    <TickIcon className="w-4 h-4 text-center" />
+                                </TableHead>
+                            ) : null}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -127,21 +129,23 @@ export function ExerciseCard({
                                         }}
                                     />
                                 </TableCell>
-                                <TableCell className="text-center">
-                                    <Button
-                                        size="sm"
-                                        variant={
-                                            set.completed
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                        onClick={() =>
-                                            handleSetCompletion(index)
-                                        }
-                                    >
-                                        <TickIcon className="w-4 h-4" />
-                                    </Button>
-                                </TableCell>
+                                {isWorkoutActive ? (
+                                    <TableCell className="text-center">
+                                        <Button
+                                            size="sm"
+                                            variant={
+                                                set.completed
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                            onClick={() =>
+                                                handleSetCompletion(index)
+                                            }
+                                        >
+                                            <TickIcon className="w-4 h-4" />
+                                        </Button>
+                                    </TableCell>
+                                ) : null}
                             </TableRow>
                         ))}
                     </TableBody>

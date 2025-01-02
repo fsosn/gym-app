@@ -262,6 +262,7 @@ export function WorkoutLog() {
                         exercises={exercises}
                         onExerciseChange={handleExerciseChange}
                         onDelete={handleDeleteExercise}
+                        isWorkoutActive={true}
                     />
                     <div className="m-2 mt-2">
                         <Button
