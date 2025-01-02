@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@/components/ui/plusIcon";
-import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { API_ENDPOINTS } from "../../config.tsx";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
 import { WorkoutSummaryCards } from "@/components/workout/WorkoutSummaryCards.tsx";
 import { ExerciseList } from "@/components/workout/ExerciseList.tsx";
 import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard.tsx";
+import DialogSave from "@/components/workout/DialogSave.tsx";
 import { useExerciseList } from "@/hooks/useExerciseList.tsx";
-import DialogSave from "./DialogSave.tsx";
+import { postWorkout } from "@/services/workouts";
 
 export function WorkoutLog() {
     const [duration, setDuration] = useState(0);
@@ -21,9 +19,7 @@ export function WorkoutLog() {
         JSON.parse(localStorage.getItem("workoutStartTime") || "null")
     );
     const { exercises, updateExercise, deleteExercise, addExercises } =
-        useExerciseList(
-            JSON.parse(localStorage.getItem("workoutLog") || "null")
-        );
+        useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -122,10 +118,7 @@ export function WorkoutLog() {
         };
 
         try {
-            axios.post(
-                `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}`,
-                workoutData
-            );
+            await postWorkout(workoutData);
         } catch (error) {
             console.error("Error saving workout:", error);
             alert("Error saving workout.");
@@ -151,6 +144,9 @@ export function WorkoutLog() {
         deleteCurrentWorkout();
         navigate("/");
     };
+
+    const toggleExerciseModal = () =>
+        setShowExerciseSelectionModal((prev) => !prev);
 
     return (
         <div>
@@ -199,15 +195,16 @@ export function WorkoutLog() {
                             onClick={() => setShowExerciseSelectionModal(true)}
                             className="w-full"
                         >
-                            <PlusIcon className="w-4 h-4 mr-1" />
+                            <Plus className="w-4 h-4 mr-1" />
                             <span>Add Exercise</span>
                         </Button>
                         {showExerciseSelectionModal && (
                             <ExerciseSelection
-                                onAddExercises={addExercises}
-                                onCancel={() =>
-                                    setShowExerciseSelectionModal(false)
-                                }
+                                onAddExercises={(newExercises) => {
+                                    addExercises(newExercises);
+                                    toggleExerciseModal();
+                                }}
+                                onCancel={toggleExerciseModal}
                             />
                         )}
                     </div>

@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "./auth/RequireAuth";
 import WorkoutPage from "./pages/WorkoutPage";
 import { WorkoutLog } from "./components/workout/WorkoutLog";
-import { RoutineForm } from "./components/workout/routine/RoutineCreateUpdateForm";
+import { RoutineForm } from "./components/workout/routine/RoutineForm";
 
 function App() {
     return (

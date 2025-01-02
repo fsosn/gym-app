@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ExerciseList } from "@/components/workout/ExerciseList";
-import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { useExerciseList } from "@/hooks/useExerciseList";
 import {
     createRoutine,
     deleteRoutine,
     fetchRoutine,
     updateRoutine,
 } from "@/services/routines";
-import { AlertDialogDiscard } from "../AlertDialogDiscard";
-import DialogSave from "../DialogSave";
+import { ArrowLeft, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ExerciseList } from "@/components/workout/ExerciseList";
+import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
+import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard";
+import DialogSave from "@/components/workout/DialogSave";
+import { useExerciseList } from "@/hooks/useExerciseList";
 
 export function RoutineForm() {
     const { routineId } = useParams();
@@ -64,9 +64,11 @@ export function RoutineForm() {
         };
 
         try {
-            isUpdateMode
-                ? await updateRoutine(routineId!, routineData)
-                : await createRoutine(routineData);
+            if (isUpdateMode) {
+                await updateRoutine(routineId!, routineData);
+            } else {
+                await createRoutine(routineData);
+            }
             navigate("/");
         } catch (error) {
             console.error("Error while modifying routine:", error);
@@ -87,6 +89,9 @@ export function RoutineForm() {
     const handleGoBackButtonClick = () => {
         navigate("/");
     };
+
+    const toggleExerciseModal = () =>
+        setShowExerciseSelectionModal((prev) => !prev);
 
     return (
         <div>
@@ -137,10 +142,11 @@ export function RoutineForm() {
                         </Button>
                         {showExerciseSelectionModal && (
                             <ExerciseSelection
-                                onAddExercises={addExercises}
-                                onCancel={() =>
-                                    setShowExerciseSelectionModal(false)
-                                }
+                                onAddExercises={(newExercises) => {
+                                    addExercises(newExercises);
+                                    toggleExerciseModal();
+                                }}
+                                onCancel={toggleExerciseModal}
                             />
                         )}
                     </div>
