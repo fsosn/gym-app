@@ -43,7 +43,7 @@ export default function Workout() {
 
     const handleStartRoutineButtonClick = async (routineId: number) => {
         try {
-            const routine = await fetchRoutine(routineId);
+            const routine = await fetchRoutine(routineId.toString());
             localStorage.removeItem("workoutStartTime");
             localStorage.setItem(
                 "workoutLog",
