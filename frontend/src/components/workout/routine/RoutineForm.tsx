@@ -13,6 +13,7 @@ import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSe
 import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard";
 import DialogSave from "@/components/workout/DialogSave";
 import { useExerciseList } from "@/hooks/useExerciseList";
+import { useToast } from "@/hooks/use-toast";
 
 export function RoutineForm() {
     const { routineId } = useParams();
@@ -30,6 +31,7 @@ export function RoutineForm() {
         addExercises,
         initExerciseList,
     } = useExerciseList();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (routineId) {
@@ -45,7 +47,11 @@ export function RoutineForm() {
 
     const handleCreateOrUpdateButtonClick = async () => {
         if (!title || !exercises || exercises.length === 0) {
-            alert("Please provide a title and add at least one exercise.");
+            toast({
+                title: "Incomplete Form",
+                description:
+                    "Please provide a title and add at least one exercise.",
+            });
             return;
         }
 
@@ -72,7 +78,11 @@ export function RoutineForm() {
             navigate("/");
         } catch (error) {
             console.error("Error while modifying routine:", error);
-            alert("Error while modifying routine.");
+            toast({
+                variant: "destructive",
+                title: "Something went wrong.",
+                description: "There was a problem while updating your routine.",
+            });
         }
     };
 
@@ -82,7 +92,11 @@ export function RoutineForm() {
             navigate("/");
         } catch (error) {
             console.error("Error while deleting routine:", error);
-            alert("Error while deleting routine.");
+            toast({
+                variant: "destructive",
+                title: "Something went wrong.",
+                description: "There was a problem while deleting your routine.",
+            });
         }
     };
 

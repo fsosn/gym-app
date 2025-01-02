@@ -9,6 +9,7 @@ import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard.tsx"
 import DialogSave from "@/components/workout/DialogSave.tsx";
 import { useExerciseList } from "@/hooks/useExerciseList.tsx";
 import { postWorkout } from "@/services/workouts";
+import { useToast } from "@/hooks/use-toast";
 
 export function WorkoutLog() {
     const [duration, setDuration] = useState(0);
@@ -21,6 +22,7 @@ export function WorkoutLog() {
     const { exercises, updateExercise, deleteExercise, addExercises } =
         useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (!startTime) {
@@ -98,7 +100,11 @@ export function WorkoutLog() {
 
     const handleSaveWorkout = async () => {
         if (!title || !exercises || exercises.length === 0) {
-            alert("Please provide a title and add at least one exercise.");
+            toast({
+                title: "Incomplete Form",
+                description:
+                    "Please provide a title and add at least one exercise.",
+            });
             return;
         }
 
@@ -121,7 +127,11 @@ export function WorkoutLog() {
             await postWorkout(workoutData);
         } catch (error) {
             console.error("Error saving workout:", error);
-            alert("Error saving workout.");
+            toast({
+                variant: "destructive",
+                title: "Something went wrong.",
+                description: "There was a problem while saving your workout.",
+            });
         }
 
         deleteCurrentWorkout();
