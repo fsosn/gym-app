@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/plusIcon";
 import { TrashIcon } from "@/components/ui/trashIcon";
 import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { Exercise } from "@/types/exercise_types.tsx";
+import { Exercise, ExerciseRecord, Set } from "@/types/exercise_types.tsx";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -33,22 +33,9 @@ import { useNavigate } from "react-router-dom";
 import { WorkoutSummaryCards } from "./WorkoutSummaryCards.tsx";
 import { ExerciseList } from "./ExerciseList.tsx";
 
-interface Exercise {
-    id: number;
-    title: string;
-    sets: Set[];
-}
-
-interface Set {
-    weight: string;
-    reps: string;
-    completed: boolean;
-    selected: boolean;
-}
-
 export function WorkoutLog() {
     const [duration, setDuration] = useState(0);
-    const [exercises, setExercises] = useState<Exercise[] | null>(() =>
+    const [exercises, setExercises] = useState<ExerciseRecord[] | null>(() =>
         JSON.parse(localStorage.getItem("workoutLog") || "null")
     );
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =

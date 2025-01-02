@@ -16,26 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ExerciseList } from "@/components/workout/ExerciseList";
 import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
-import { ExerciseRecord } from "@/types/exercise_types.tsx";
+import { ExerciseRecord, Set, Exercise } from "@/types/exercise_types.tsx";
 import { API_ENDPOINTS } from "@/config.tsx";
-
-interface Exercise {
-    id: number;
-    title: string;
-    sets: Set[];
-}
-
-interface Set {
-    weight: string;
-    reps: string;
-    completed: boolean;
-}
 
 export function RoutineCreateUpdateForm() {
     const { routineId } = useParams();
     const [isUpdateMode, setIsUpdateMode] = useState(false);
 
-    const [exercises, setExercises] = useState<Exercise[] | null>(null);
+    const [exercises, setExercises] = useState<ExerciseRecord[] | null>(null);
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
         useState(false);
     const [displayedTitle, setDisplayedTitle] = useState("");
@@ -87,8 +75,8 @@ export function RoutineCreateUpdateForm() {
         setExercises(newExercises);
     };
 
-    const handleAddExercisesToLog = (selectedExercises: ExerciseRecord[]) => {
-        const newExercises = [
+    const handleAddExercisesToLog = (selectedExercises: Exercise[]) => {
+        const newExercises: ExerciseRecord[] = [
             ...(exercises || []),
             ...selectedExercises.map((exercise) => ({
                 title: exercise.title,

@@ -4,10 +4,10 @@ import { API_ENDPOINTS } from "@/config";
 import { Button } from "@/components/ui/button";
 import ExerciseFilters from "./ExerciseFilters";
 import ExerciseTable from "./ExerciseTable";
-import { ExerciseRecord, ExerciseApiResponse } from "@/types/exercise_types";
+import { Exercise } from "@/types/exercise_types";
 
 interface ExerciseSelectionProps {
-    onAddExercises: (exercises: ExerciseRecord[]) => void;
+    onAddExercises: (exercises: Exercise[]) => void;
     onCancel: () => void;
 }
 
@@ -15,13 +15,9 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     onAddExercises,
     onCancel,
 }) => {
-    const [selectedExercises, setSelectedExercises] = useState<
-        ExerciseRecord[]
-    >([]);
-    const [exerciseList, setExerciseList] = useState<ExerciseRecord[]>([]);
-    const [filteredExercises, setFilteredExercises] = useState<
-        ExerciseApiResponse[]
-    >([]);
+    const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+    const [exerciseList, setExerciseList] = useState<Exercise[]>([]);
+    const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
     const [filters, setFilters] = useState({
         muscle: "Any",
         equipment: "Any",
@@ -32,7 +28,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                const response = await axios.get<ExerciseApiResponse[]>(
+                const response = await axios.get<Exercise[]>(
                     `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.EXERCISES}`
                 );
                 setExerciseList(response.data);
@@ -75,7 +71,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
         setFilteredExercises(filtered);
     }, [filters, exerciseList]);
 
-    const toggleExerciseSelection = (exercise: ExerciseRecord) => {
+    const toggleExerciseSelection = (exercise: Exercise) => {
         setSelectedExercises((prev) =>
             prev.some((e) => e.id === exercise.id)
                 ? prev.filter((e) => e.id !== exercise.id)
