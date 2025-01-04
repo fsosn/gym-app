@@ -8,12 +8,13 @@ import {
 } from "@/services/routines";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ExerciseList } from "@/components/workout/ExerciseList";
-import ExerciseSelection from "@/components/workout/exerciseSelection/ExerciseSelection";
+import { ExerciseList } from "@/components/exercise/ExerciseList";
+import ExerciseSelection from "@/components/exercise/exerciseSelection/ExerciseSelection";
 import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard";
 import DialogSave from "@/components/workout/DialogSave";
 import { useExerciseList } from "@/hooks/useExerciseList";
 import { useToast } from "@/hooks/use-toast";
+import { Set } from "@/types/exercise_types";
 
 export function RoutineForm() {
     const { routineId } = useParams();
@@ -60,7 +61,7 @@ export function RoutineForm() {
             description,
             exercises: exercises.map((exercise) => ({
                 exercise_id: exercise.id,
-                sets: exercise.sets.map((set) => ({
+                sets: exercise.sets.map((set: Set) => ({
                     reps: parseInt(set.reps) || 0,
                     weight: parseFloat(set.weight) || 0,
                     distance: 0,
@@ -144,7 +145,8 @@ export function RoutineForm() {
                         exercises={exercises}
                         onExerciseChange={updateExercise}
                         onDelete={deleteExercise}
-                        isWorkoutActive={false}
+                        isRoutine={true}
+                        isFinishedWorkout={false}
                     />
                     <div className="m-2 mt-2">
                         <Button

@@ -11,4 +11,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-CMD ["sh", "-c", "flask db upgrade && flask run --host=0.0.0.0 --port=5000"]
+CMD ["sh", "-c", "\
+    if [ ! -d 'migrations' ]; then \
+    flask db init; \
+    fi && \
+    flask db stamp head && \
+    flask db migrate && \
+    flask db upgrade && \
+    flask run --host=0.0.0.0 --port=5000 \
+    "]

@@ -4,9 +4,11 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 import { Route, Routes } from "react-router-dom";
 import { RequireAuth } from "@/auth/RequireAuth";
 import WorkoutPage from "@/pages/WorkoutPage";
-import { WorkoutLog } from "@/components/workout/WorkoutLog";
-import { RoutineForm } from "@/components/workout/routine/RoutineForm";
+import { WorkoutLog } from "@/components/workout/workout_log/WorkoutLog";
+import { RoutineForm } from "@/components/routine/RoutineForm";
 import { Toaster } from "@/components/ui/toaster";
+import HistoryPage from "./pages/HistoryPage";
+import { FinishedWorkout } from "./components/history/FinishedWorkout";
 
 function App() {
     return (
@@ -14,6 +16,15 @@ function App() {
             <Routes>
                 <Route
                     path="/"
+                    index
+                    element={
+                        <RequireAuth>
+                            <WorkoutPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/workout"
                     index
                     element={
                         <RequireAuth>
@@ -36,12 +47,28 @@ function App() {
                             <RoutineForm />
                         </RequireAuth>
                     }
-                ></Route>
+                />
                 <Route
                     path="/routine/:routineId"
                     element={
                         <RequireAuth>
                             <RoutineForm />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/history"
+                    element={
+                        <RequireAuth>
+                            <HistoryPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/workout/:workoutId"
+                    element={
+                        <RequireAuth>
+                            <FinishedWorkout />
                         </RequireAuth>
                     }
                 />

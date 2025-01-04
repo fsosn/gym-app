@@ -1,6 +1,6 @@
-import { DurationCard } from "@/components/workout/DurationCard";
-import { VolumeCard } from "./VolumeCard";
-import { SetsCard } from "./SetsCard";
+import { DurationCard } from "@/components/workout/workout_details/summary_cards/DurationCard";
+import { VolumeCard } from "./summary_cards/VolumeCard";
+import { SetsCard } from "./summary_cards/SetsCard";
 
 export function WorkoutSummaryCards({
     duration,
