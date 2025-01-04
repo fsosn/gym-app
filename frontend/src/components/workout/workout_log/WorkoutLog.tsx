@@ -22,8 +22,14 @@ export function WorkoutLog() {
             JSON.parse(localStorage.getItem("workoutStartTime") || "null") ||
             Date.now()
     );
-    const { exercises, updateExercise, deleteExercise, addExercises } =
-        useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
+    const {
+        exercises,
+        updateExercise,
+        deleteExercise,
+        addExercises,
+        moveExerciseUp,
+        moveExerciseDown,
+    } = useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
     const navigate = useNavigate();
     const { toast } = useToast();
     const { duration, totalVolume, completedSetsCount, formatDuration } =
@@ -145,6 +151,8 @@ export function WorkoutLog() {
                         exercises={exercises}
                         onExerciseChange={updateExercise}
                         onDelete={deleteExercise}
+                        onMoveExerciseUp={moveExerciseUp}
+                        onMoveExerciseDown={moveExerciseDown}
                         isRoutine={false}
                         isFinishedWorkout={false}
                     />

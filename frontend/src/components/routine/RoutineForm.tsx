@@ -31,6 +31,8 @@ export function RoutineForm() {
         deleteExercise,
         addExercises,
         initExerciseList,
+        moveExerciseUp,
+        moveExerciseDown,
     } = useExerciseList();
     const { toast } = useToast();
 
@@ -147,6 +149,8 @@ export function RoutineForm() {
                         onDelete={deleteExercise}
                         isRoutine={true}
                         isFinishedWorkout={false}
+                        onMoveExerciseUp={moveExerciseUp}
+                        onMoveExerciseDown={moveExerciseDown}
                     />
                     <div className="m-2 mt-2">
                         <Button
