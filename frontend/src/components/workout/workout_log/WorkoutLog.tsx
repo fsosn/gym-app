@@ -60,19 +60,38 @@ export function WorkoutLog() {
             return;
         }
 
+        if (
+            exercises.some((exercise) =>
+                exercise.sets.some((set: Set) => !set.completed)
+            )
+        ) {
+            toast({
+                title: "You still have some incomplete sets in your workout",
+                description:
+                    "Please check your logged exercises and make sure all sets are completed.",
+            });
+            return;
+        }
+
         const workoutData = {
             title,
             begin_datetime: new Date().toISOString(),
             time: formatDuration(duration),
-            exercises: exercises.map((exercise) => ({
-                id: exercise.id,
-                sets: exercise.sets.map((set: Set) => ({
-                    reps: parseInt(set.reps) || 0,
-                    weight: parseFloat(set.weight) || 0,
-                    distance: 0,
-                    duration: "00:00",
+            exercises: exercises
+                .filter((exercise) =>
+                    exercise.sets.some((set: Set) => set.completed)
+                )
+                .map((exercise) => ({
+                    id: exercise.id,
+                    sets: exercise.sets
+                        .filter((set: Set) => set.completed)
+                        .map((set: Set) => ({
+                            reps: parseInt(set.reps) || 0,
+                            weight: parseFloat(set.weight) || 0,
+                            distance: 0,
+                            duration: "00:00",
+                        })),
                 })),
-            })),
         };
 
         try {
