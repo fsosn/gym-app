@@ -3,6 +3,7 @@ from app.models.workout.workout_exercise import WorkoutExercise
 from app.models.workout.workout_set import Set
 from app.models.exercise import Exercise
 from app.extensions import db
+from sqlalchemy import desc
 
 
 def create_workout(data, user_id):
@@ -19,7 +20,7 @@ def create_workout(data, user_id):
 
     for exercise_data in data["exercises"]:
         workout_exercise = WorkoutExercise(
-            workout_id=workout.id, exercise_id=exercise_data["exercise_id"]
+            workout_id=workout.id, exercise_id=exercise_data["id"]
         )
         db.session.add(workout_exercise)
         db.session.flush()
@@ -70,8 +71,8 @@ def get_workout_by_id(workout_id, user_id, role):
             "time": workout.time,
             "exercises": [
                 {
-                    "exercise_id": we.exercise_id,
-                    "exercise_title": Exercise.query.get(we.exercise_id).title,
+                    "id": we.exercise_id,
+                    "title": Exercise.query.get(we.exercise_id).title,
                     "sets": [
                         {
                             "reps": s.reps,
@@ -91,9 +92,13 @@ def get_workout_by_id(workout_id, user_id, role):
 
 def get_all_workouts(user_id, role):
     if role == "ADMIN":
-        workouts = Workout.query.all()
+        workouts = Workout.query.order_by(desc(Workout.begin_datetime)).all()
     else:
-        workouts = Workout.query.filter_by(user_id=user_id).all()
+        workouts = (
+            Workout.query.filter_by(user_id=user_id)
+            .order_by(desc(Workout.begin_datetime))
+            .all()
+        )
 
     return [
         {
@@ -104,8 +109,8 @@ def get_all_workouts(user_id, role):
             "time": workout.time,
             "exercises": [
                 {
-                    "exercise_id": we.exercise_id,
-                    "exercise_title": Exercise.query.get(we.exercise_id).title,
+                    "id": we.exercise_id,
+                    "title": Exercise.query.get(we.exercise_id).title,
                     "sets": [
                         {
                             "reps": s.reps,
@@ -135,7 +140,7 @@ def update_workout(workout_id, title, begin_datetime, time, exercises):
     existing_exercises = {we.id: we for we in workout.exercises}
 
     for exercise_data in exercises:
-        exercise_id = exercise_data["exercise_id"]
+        exercise_id = exercise_data["id"]
         sets_data = exercise_data["sets"]
 
         if "id" in exercise_data and exercise_data["id"] in existing_exercises:
