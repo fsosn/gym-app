@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
-import { Workout } from "@/types/workout";
+import { Workout } from "@/types/workout_types";
 
 export const postWorkout = async (workoutData: any) => {
     try {

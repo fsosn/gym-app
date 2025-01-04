@@ -4,7 +4,7 @@ import { Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RoutineCard from "@/components/routine/RoutineCard";
 import { Routine } from "@/types/routine_types.tsx";
-import { fetchRoutine, fetchRoutines } from "@/services/routines.tsx";
+import { fetchRoutine, fetchRoutines } from "@/services/routines";
 
 export default function Workout() {
     const [hasOngoingWorkout, setHasOngoingWorkout] = useState(false);

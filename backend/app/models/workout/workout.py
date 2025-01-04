@@ -6,9 +6,10 @@ class Workout(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     title = db.Column(db.String(50), nullable=False)
-    begin_datetime = db.Column(db.DateTime)
-    time = db.Column(db.String(10))
-    volume = db.Column(db.Float, default=0)
+    begin_datetime = db.Column(db.DateTime, nullable=False)
+    time = db.Column(db.String(10), nullable=False)
+    volume = db.Column(db.Float, nullable=False)
+    total_sets = db.Column(db.Integer, nullable=False)
     exercises = db.relationship(
         "WorkoutExercise",
         backref="workout",

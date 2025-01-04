@@ -78,6 +78,7 @@ export function WorkoutLog() {
                 title: "Something went wrong.",
                 description: "There was a problem while saving your workout.",
             });
+            return;
         }
 
         deleteCurrentWorkout();

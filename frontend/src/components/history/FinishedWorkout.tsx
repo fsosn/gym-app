@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { WorkoutSummaryCards } from "@/components/workout/workout_details/WorkoutSummaryCards";
 import { ExerciseList } from "@/components/exercise/ExerciseList";
 import { fetchWorkout } from "@/services/workouts";
-import { useWorkoutLogUtils } from "@/hooks/useWorkoutLogUtils";
 import { ExerciseRecord } from "@/types/exercise_types";
-import { Workout } from "@/types/workout";
+import { Workout } from "@/types/workout_types";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,8 +19,10 @@ export function FinishedWorkout() {
     const { workoutId } = useParams();
     const navigate = useNavigate();
     const [exercises, setExercises] = useState<ExerciseRecord[] | null>(null);
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState<string>("");
     const [duration, setDuration] = useState<string>();
+    const [totalSets, setTotalSets] = useState<number>(0);
+    const [totalVolume, setTotalVolume] = useState<number>(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,6 +31,8 @@ export function FinishedWorkout() {
                 setExercises(workoutData.exercises);
                 setTitle(workoutData.title);
                 setDuration(workoutData.time);
+                setTotalVolume(workoutData.volume);
+                setTotalSets(workoutData.total_sets);
             } catch (error) {
                 console.error("Error fetching workout:", error);
             }
@@ -37,11 +40,6 @@ export function FinishedWorkout() {
 
         fetchData();
     }, [workoutId]);
-
-    const { totalVolume, completedSetsCount } = useWorkoutLogUtils(
-        null,
-        exercises!
-    );
 
     const handleGoBackButtonClick = () => {
         navigate("/history");
@@ -86,7 +84,7 @@ export function FinishedWorkout() {
                 <WorkoutSummaryCards
                     duration={duration}
                     totalVolume={totalVolume}
-                    completedSets={completedSetsCount}
+                    completedSets={totalSets}
                 />
             </div>
             <div className="flex flex-col items-center">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Workout } from "@/types/workout";
+import { Workout } from "@/types/workout_types";
 import { fetchWorkouts } from "@/services/workouts";
 import WorkoutCard from "./WorkoutCard";
 
