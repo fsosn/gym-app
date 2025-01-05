@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Ellipsis, Pencil, Play, SquareX } from "lucide-react";
+import { ArrowLeft, Ellipsis, Pencil, Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkoutSummaryCards } from "@/components/workout/workout_details/WorkoutSummaryCards";
 import { ExerciseList } from "@/components/exercise/ExerciseList";
-import { fetchWorkout } from "@/services/workouts";
+import { deleteWorkout, fetchWorkout } from "@/services/workouts";
 import { ExerciseRecord } from "@/types/exercise_types";
 import { Workout } from "@/types/workout_types";
 import {
@@ -14,6 +14,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 export function FinishedWorkout() {
     const { workoutId } = useParams();
@@ -23,6 +24,7 @@ export function FinishedWorkout() {
     const [duration, setDuration] = useState<string>();
     const [totalSets, setTotalSets] = useState<number>(0);
     const [totalVolume, setTotalVolume] = useState<number>(0);
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,6 +42,24 @@ export function FinishedWorkout() {
 
         fetchData();
     }, [workoutId]);
+
+    const handleDeleteWorkoutButtonClick = async () => {
+        try {
+            await deleteWorkout(workoutId!);
+            navigate("/history");
+        } catch (error) {
+            console.error(
+                `Error while deleting workout with id ${workoutId}:`,
+                error
+            );
+            toast({
+                variant: "destructive",
+                title: "Something went wrong.",
+                description:
+                    "There was a problem while deleting your workout. Please try again.",
+            });
+        }
+    };
 
     const handleGoBackButtonClick = () => {
         navigate("/history");
@@ -73,8 +93,11 @@ export function FinishedWorkout() {
                             Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-500">
-                            <SquareX />
+                        <DropdownMenuItem
+                            className="text-red-500"
+                            onClick={handleDeleteWorkoutButtonClick}
+                        >
+                            <X />
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>

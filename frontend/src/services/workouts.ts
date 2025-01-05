@@ -37,3 +37,14 @@ export const fetchWorkout = async (workoutId: string): Promise<Workout> => {
         throw error;
     }
 };
+
+export const deleteWorkout = async (workoutId: string) => {
+    try {
+        await axios.delete(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}/${workoutId}`
+        );
+    } catch (error) {
+        console.error("Error while deleting workout:", error);
+        throw error;
+    }
+};
