@@ -75,7 +75,7 @@ export function WorkoutLog() {
 
         const workoutData = {
             title,
-            begin_datetime: new Date().toISOString(),
+            begin_datetime: new Date(startTime!).toISOString(),
             time: formatDuration(duration),
             exercises: exercises
                 .filter((exercise) =>
