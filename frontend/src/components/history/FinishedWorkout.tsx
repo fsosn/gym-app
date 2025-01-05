@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Ellipsis, Pencil, Play, X } from "lucide-react";
+import { ArrowLeft, Ellipsis, Pencil, Repeat2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkoutSummaryCards } from "@/components/workout/workout_details/WorkoutSummaryCards";
 import { ExerciseList } from "@/components/exercise/ExerciseList";
@@ -37,11 +37,35 @@ export function FinishedWorkout() {
                 setTotalSets(workoutData.total_sets);
             } catch (error) {
                 console.error("Error fetching workout:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong.",
+                    description:
+                        "There was a problem while fetching your workout.",
+                });
+                navigate("/history");
             }
         };
 
         fetchData();
     }, [workoutId]);
+
+    const handleRepeatWorkoutButtonClick = async () => {
+        if (!!localStorage.getItem("workoutLog")) {
+            toast({
+                title: "Workout In Progress",
+                description:
+                    "You already have an ongoing workout. Please complete it before starting a new one.",
+            });
+            return;
+        }
+
+        localStorage.setItem("workoutLog", JSON.stringify(exercises));
+        navigate("/workout-log");
+        toast({
+            description: "Workout repeated succesfully.",
+        });
+    };
 
     const handleDeleteWorkoutButtonClick = async () => {
         try {
@@ -83,9 +107,11 @@ export function FinishedWorkout() {
                         <Ellipsis />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem className="text-blue-500">
-                            <Play />
-                            Resume
+                        <DropdownMenuItem
+                            onClick={handleRepeatWorkoutButtonClick}
+                        >
+                            <Repeat2 />
+                            Repeat
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
