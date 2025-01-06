@@ -7,7 +7,7 @@ class Workout(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     begin_datetime = db.Column(db.DateTime, nullable=False)
-    time = db.Column(db.String(10), nullable=False)
+    time = db.Column(db.Integer, nullable=False)
     volume = db.Column(db.Float, nullable=False)
     total_sets = db.Column(db.Integer, nullable=False)
     exercises = db.relationship(

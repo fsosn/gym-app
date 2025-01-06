@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ExerciseSelection from "@/components/exercise/exerciseSelection/ExerciseSelection";
@@ -8,46 +8,82 @@ import { ExerciseList } from "@/components/exercise/ExerciseList";
 import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard.tsx";
 import DialogSave from "@/components/workout/DialogSave.tsx";
 import { useExerciseList } from "@/hooks/useExerciseList";
-import { postWorkout } from "@/services/workouts";
 import { useToast } from "@/hooks/use-toast";
 import { useWorkoutLogUtils } from "@/hooks/useWorkoutLogUtils";
-import { Set } from "@/types/exercise_types";
+import { ExerciseRecord, Set } from "@/types/exercise_types";
+import { Workout } from "@/types/workout_types";
+import { patchWorkout, postWorkout } from "@/services/workouts";
+import { formatDuration } from "@/utils/time_utils";
 
 export function WorkoutLog() {
+    const [isEditMode, setIsEditMode] = useState<boolean | null>(null);
     const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
         useState(false);
-    const [title, setTitle] = useState("");
-    const [startTime] = useState<number | null>(
-        () =>
-            JSON.parse(localStorage.getItem("workoutStartTime") || "null") ||
-            Date.now()
-    );
+    const [title, setTitle] = useState<string>("");
+    const [startTime, setStartTime] = useState<number | null>(null);
+    const [finishedWorkout, setFinishedWorkout] = useState<Workout>();
     const {
         exercises,
         updateExercise,
         deleteExercise,
         addExercises,
+        initExerciseList,
         moveExerciseUp,
         moveExerciseDown,
-    } = useExerciseList(JSON.parse(localStorage.getItem("workoutLog") || "[]"));
-    const navigate = useNavigate();
+    } = useExerciseList([]);
+    const { duration, totalVolume, completedSetsCount } = useWorkoutLogUtils(
+        startTime,
+        exercises
+    );
     const { toast } = useToast();
-    const { duration, totalVolume, completedSetsCount, formatDuration } =
-        useWorkoutLogUtils(startTime, exercises);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        localStorage.setItem("workoutStartTime", JSON.stringify(startTime));
+        if (location.state?.edit && location.state?.workout) {
+            setIsEditMode(true);
+            const workout = location.state?.workout;
+            setFinishedWorkout(workout);
+            setTitle(workout.title);
+            setStartTime(Date.now() - workout.time * 1000);
+            initExerciseList(
+                workout.exercises.map((exercise: ExerciseRecord) => ({
+                    ...exercise,
+                    sets: exercise.sets.map((set) => ({
+                        ...set,
+                        completed: true,
+                    })),
+                }))
+            );
+        } else {
+            setIsEditMode(false);
+            const storedStartTime =
+                JSON.parse(
+                    localStorage.getItem("workoutStartTime") || "null"
+                ) || Date.now();
+            const storedExercises = JSON.parse(
+                localStorage.getItem("workoutLog") || "[]"
+            );
+            setStartTime(storedStartTime);
+            initExerciseList(storedExercises);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isEditMode && startTime !== null) {
+            localStorage.setItem("workoutStartTime", JSON.stringify(startTime));
+        }
     }, [startTime]);
 
     useEffect(() => {
-        const workoutData = {
-            title,
-            exercises,
-        };
-        localStorage.setItem(
-            "workoutLog",
-            JSON.stringify(workoutData.exercises)
-        );
+        if (!isEditMode && exercises.length > 0) {
+            const workoutData = { title, exercises };
+
+            localStorage.setItem(
+                "workoutLog",
+                JSON.stringify(workoutData.exercises)
+            );
+        }
     }, [exercises, title]);
 
     const handleSaveWorkout = async () => {
@@ -73,29 +109,22 @@ export function WorkoutLog() {
             return;
         }
 
-        const workoutData = {
-            title,
-            begin_datetime: new Date(startTime!).toISOString(),
-            time: formatDuration(duration),
-            exercises: exercises
-                .filter((exercise) =>
-                    exercise.sets.some((set: Set) => set.completed)
-                )
-                .map((exercise) => ({
-                    id: exercise.id,
-                    sets: exercise.sets
-                        .filter((set: Set) => set.completed)
-                        .map((set: Set) => ({
-                            reps: parseInt(set.reps) || 0,
-                            weight: parseFloat(set.weight) || 0,
-                            distance: 0,
-                            duration: "00:00",
-                        })),
-                })),
-        };
-
         try {
-            await postWorkout(workoutData);
+            if (isEditMode && finishedWorkout) {
+                await patchWorkout(finishedWorkout.id, {
+                    title: title,
+                    begin_datetime: finishedWorkout?.begin_datetime,
+                    time: duration,
+                    exercises: exercises,
+                });
+            } else {
+                await postWorkout({
+                    title: title,
+                    begin_datetime: new Date(startTime!).toISOString(),
+                    time: duration,
+                    exercises: exercises,
+                });
+            }
         } catch (error) {
             console.error("Error saving workout:", error);
             toast({
@@ -106,8 +135,11 @@ export function WorkoutLog() {
             return;
         }
 
-        deleteCurrentWorkout();
-        navigate("/");
+        if (!isEditMode) {
+            deleteCurrentWorkout();
+        }
+
+        navigate("/history");
     };
 
     const deleteCurrentWorkout = () => {
@@ -116,10 +148,14 @@ export function WorkoutLog() {
     };
 
     const handleGoBackButtonClick = () => {
-        if (!exercises || exercises.length === 0) {
+        if (!isEditMode && (!exercises || exercises.length === 0)) {
             deleteCurrentWorkout();
         }
-        navigate("/");
+        if (isEditMode) {
+            navigate("/history");
+        } else {
+            navigate("/workout");
+        }
     };
 
     const handleDiscardWorkoutButtonClick = () => {
@@ -141,14 +177,16 @@ export function WorkoutLog() {
                     <ArrowLeft className="w-4 h-4" />
                 </Button>
                 <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
-                    Workout Log
+                    {isEditMode ? title : "Workout Log"}
                 </h1>
                 <DialogSave
                     title={title}
                     setTitle={setTitle}
                     handleSave={handleSaveWorkout}
-                    buttonLabel="Finish"
-                    dialogTitle="Finish Workout"
+                    buttonLabel={isEditMode ? "Update" : "Finish"}
+                    dialogTitle={
+                        isEditMode ? "Update Workout" : "Finish Workout"
+                    }
                     dialogDescription="Please add a title for your workout. Click save when
                         you're done."
                     isActive={completedSetsCount != 0}
@@ -193,14 +231,16 @@ export function WorkoutLog() {
                             />
                         )}
                     </div>
-                    <div className="m-2 mt-2 pb-6">
-                        <AlertDialogDiscard
-                            label="Discard Workout"
-                            description="If you discard this workout, all unsaved
+                    {!isEditMode && (
+                        <div className="m-2 mt-2 pb-6">
+                            <AlertDialogDiscard
+                                label="Discard Workout"
+                                description="If you discard this workout, all unsaved
                                         changes will be lost."
-                            onDiscard={handleDiscardWorkoutButtonClick}
-                        />
-                    </div>
+                                onDiscard={handleDiscardWorkoutButtonClick}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

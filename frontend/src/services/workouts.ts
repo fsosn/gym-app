@@ -1,8 +1,8 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
-import { Workout } from "@/types/workout_types";
+import { Workout, WorkoutRequest } from "@/types/workout_types";
 
-export const postWorkout = async (workoutData: any) => {
+export const postWorkout = async (workoutData: WorkoutRequest) => {
     try {
         await axios.post(
             `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}`,
@@ -45,6 +45,24 @@ export const deleteWorkout = async (workoutId: string) => {
         );
     } catch (error) {
         console.error("Error while deleting workout:", error);
+        throw error;
+    }
+};
+
+export const patchWorkout = async (
+    workoutId: number,
+    workoutData: WorkoutRequest
+) => {
+    try {
+        await axios.patch(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}/${workoutId}`,
+            workoutData
+        );
+    } catch (error) {
+        console.error(
+            `Error while patching workout with id ${workoutId}:`,
+            error
+        );
         throw error;
     }
 };

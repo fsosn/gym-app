@@ -41,8 +41,11 @@ def get_all_workouts():
 @jwt_required()
 def update_workout(workout_id):
     data = request.get_json()
+    identity = get_jwt_identity()
+    user_id = identity.get("id")
     result, status_code = workout_service.update_workout(
         workout_id=workout_id,
+        user_id=user_id,
         title=data.get("title"),
         begin_datetime=data.get("begin_datetime"),
         time=data.get("time"),
@@ -59,5 +62,22 @@ def delete_workout(workout_id):
     role = identity.get("role")
     result, status_code = workout_service.delete_workout(
         workout_id, user_id, role
+    )
+    return jsonify(result), status_code
+
+
+@workout_bp.route("/workouts/<int:workout_id>", methods=["PATCH"])
+@jwt_required()
+def patch_workout(workout_id):
+    data = request.get_json()
+    identity = get_jwt_identity()
+    user_id = identity.get("id")
+    result, status_code = workout_service.patch_workout(
+        workout_id=workout_id,
+        user_id=user_id,
+        title=data.get("title"),
+        begin_datetime=data.get("begin_datetime"),
+        time=data.get("time"),
+        exercises=data.get("exercises"),
     )
     return jsonify(result), status_code

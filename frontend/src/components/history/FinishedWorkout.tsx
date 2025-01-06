@@ -15,13 +15,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { formatDuration } from "@/utils/time_utils";
 
 export function FinishedWorkout() {
     const { workoutId } = useParams();
     const navigate = useNavigate();
+    const [workout, setWorkout] = useState<Workout | null>(null);
     const [exercises, setExercises] = useState<ExerciseRecord[] | null>(null);
     const [title, setTitle] = useState<string>("");
-    const [duration, setDuration] = useState<string>();
+    const [duration, setDuration] = useState<number>(0);
     const [totalSets, setTotalSets] = useState<number>(0);
     const [totalVolume, setTotalVolume] = useState<number>(0);
     const { toast } = useToast();
@@ -30,6 +32,7 @@ export function FinishedWorkout() {
         const fetchData = async () => {
             try {
                 const workoutData: Workout = await fetchWorkout(workoutId!);
+                setWorkout(workoutData);
                 setExercises(workoutData.exercises);
                 setTitle(workoutData.title);
                 setDuration(workoutData.time);
@@ -65,6 +68,10 @@ export function FinishedWorkout() {
         toast({
             description: "Workout repeated succesfully.",
         });
+    };
+
+    const handleEditWorkoutButtonClick = async () => {
+        navigate("/workout-log", { state: { edit: true, workout: workout } });
     };
 
     const handleDeleteWorkoutButtonClick = async () => {
@@ -114,7 +121,9 @@ export function FinishedWorkout() {
                             Repeat
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={handleEditWorkoutButtonClick}
+                        >
                             <Pencil />
                             Edit
                         </DropdownMenuItem>
@@ -131,7 +140,7 @@ export function FinishedWorkout() {
             </nav>
             <div className="p-2">
                 <WorkoutSummaryCards
-                    duration={duration}
+                    duration={formatDuration(duration)}
                     totalVolume={totalVolume}
                     completedSets={totalSets}
                 />

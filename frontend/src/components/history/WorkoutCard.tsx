@@ -13,32 +13,17 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table";
+import { formatDuration } from "@/utils/time_utils";
 
 interface WorkoutCardProps {
     title: string;
     beginDatetime: string;
-    duration: string;
+    duration: number;
     totalVolume: number;
     totalExercises: number;
     totalSets: number;
     onWorkoutCardClick: () => void;
 }
-
-const formatDuration = (duration: string): string => {
-    const [minutesStr, secondsStr] = duration.split(":");
-    const minutes = parseInt(minutesStr, 10);
-    const seconds = parseInt(secondsStr, 10);
-
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-
-    const parts = [];
-    if (hours > 0) parts.push(`${hours}h`);
-    if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
-    if (seconds > 0) parts.push(`${seconds}s`);
-
-    return parts.join(" ");
-};
 
 const WorkoutCard: React.FC<WorkoutCardProps> = ({
     title,
