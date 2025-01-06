@@ -42,7 +42,7 @@ export function ExerciseCard({
 }: ExerciseCardProps) {
     const handleAddSet = () => {
         if (onSetsChange) {
-            onSetsChange([...sets, { weight: "", reps: "", completed: false }]);
+            onSetsChange([...sets, { weight: 0, reps: 0, completed: false }]);
         }
     };
 
@@ -152,7 +152,7 @@ export function ExerciseCard({
                                             if (onSetsChange) {
                                                 const newSets = [...sets];
                                                 newSets[index].weight =
-                                                    e.target.value;
+                                                    parseFloat(e.target.value);
                                                 onSetsChange(newSets);
                                             }
                                         }}
@@ -166,8 +166,9 @@ export function ExerciseCard({
                                         onChange={(e) => {
                                             if (onSetsChange) {
                                                 const newSets = [...sets];
-                                                newSets[index].reps =
-                                                    e.target.value;
+                                                newSets[index].reps = parseInt(
+                                                    e.target.value
+                                                );
                                                 onSetsChange(newSets);
                                             }
                                         }}

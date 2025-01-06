@@ -21,7 +21,7 @@ export const useExerciseList = (initialExercises: ExerciseRecord[] = []) => {
             ...selectedExercises.map((exercise) => ({
                 id: exercise.id,
                 title: exercise.title,
-                sets: [{ weight: "", reps: "", completed: false }],
+                sets: [{ weight: 0, reps: 0, completed: false }],
             })),
         ];
         setExercises(newExercises);
