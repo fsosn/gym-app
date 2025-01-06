@@ -28,7 +28,7 @@ export function AlertDialogDiscard({
             <AlertDialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="w-full text-destructive hover:text-destructive border-red-900"
+                    className="w-full text-destructive hover:text-destructive"
                 >
                     <Trash className="w-4 h-4 mr-1" />
                     <span>{label}</span>

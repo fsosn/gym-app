@@ -9,16 +9,23 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table";
-import { PlusIcon } from "@/components/ui/plusIcon";
-import { TickIcon } from "@/components/ui/tickIcon";
-import { CrossIcon } from "@/components/ui/crossIcon";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Set } from "@/types/exercise_types";
+import { ArrowDown, ArrowUp, Check, Ellipsis, X } from "lucide-react";
 
 interface ExerciseCardProps {
     exerciseName: string;
     sets: Set[];
     onSetsChange?: (sets: Set[]) => void;
     onDelete?: () => void;
+    onMoveUp?: () => void;
+    onMoveDown?: () => void;
     isRoutine: boolean;
     isFinishedWorkout: boolean;
 }
@@ -28,12 +35,14 @@ export function ExerciseCard({
     sets,
     onSetsChange,
     onDelete,
+    onMoveUp,
+    onMoveDown,
     isRoutine,
     isFinishedWorkout,
 }: ExerciseCardProps) {
     const handleAddSet = () => {
         if (onSetsChange) {
-            onSetsChange([...sets, { weight: "", reps: "", completed: false }]);
+            onSetsChange([...sets, { weight: 0, reps: 0, completed: false }]);
         }
     };
 
@@ -66,13 +75,33 @@ export function ExerciseCard({
                     <div>{exerciseName}</div>
                     {isFinishedWorkout ? null : (
                         <div>
-                            <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={onDelete}
-                            >
-                                <CrossIcon className="w-4 h-4" />
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Ellipsis />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    {onMoveUp && (
+                                        <DropdownMenuItem onClick={onMoveUp}>
+                                            <ArrowUp />
+                                            Move Up
+                                        </DropdownMenuItem>
+                                    )}
+                                    {onMoveDown && (
+                                        <DropdownMenuItem onClick={onMoveDown}>
+                                            <ArrowDown />
+                                            Move Down
+                                        </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        className="text-red-500"
+                                        onClick={onDelete}
+                                    >
+                                        <X />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     )}
                 </CardTitle>
@@ -89,7 +118,7 @@ export function ExerciseCard({
                             <TableHead>REPS</TableHead>
                             {isRoutine || isFinishedWorkout ? null : (
                                 <TableHead className="flex justify-center items-center">
-                                    <TickIcon className="w-4 h-4 text-center" />
+                                    <Check className="w-4 h-4 text-center" />
                                 </TableHead>
                             )}
                         </TableRow>
@@ -109,7 +138,7 @@ export function ExerciseCard({
                                                 handleDeleteSet(index)
                                             }
                                         >
-                                            <CrossIcon className="w-4 h-4" />
+                                            <X className="w-4 h-4" />
                                         </Button>
                                     </TableCell>
                                 )}
@@ -123,7 +152,7 @@ export function ExerciseCard({
                                             if (onSetsChange) {
                                                 const newSets = [...sets];
                                                 newSets[index].weight =
-                                                    e.target.value;
+                                                    parseFloat(e.target.value);
                                                 onSetsChange(newSets);
                                             }
                                         }}
@@ -137,8 +166,9 @@ export function ExerciseCard({
                                         onChange={(e) => {
                                             if (onSetsChange) {
                                                 const newSets = [...sets];
-                                                newSets[index].reps =
-                                                    e.target.value;
+                                                newSets[index].reps = parseInt(
+                                                    e.target.value
+                                                );
                                                 onSetsChange(newSets);
                                             }
                                         }}
@@ -157,7 +187,7 @@ export function ExerciseCard({
                                                 handleSetCompletion(index)
                                             }
                                         >
-                                            <TickIcon className="w-4 h-4" />
+                                            <Check className="w-4 h-4" />
                                         </Button>
                                     </TableCell>
                                 )}
@@ -171,7 +201,7 @@ export function ExerciseCard({
                         className="w-full mt-2"
                         variant="secondary"
                     >
-                        <PlusIcon className="w-4 h-4 mr-1" />
+                        <Check className="w-4 h-4 mr-1" />
                         <span>Add Set</span>
                     </Button>
                 )}

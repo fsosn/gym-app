@@ -21,7 +21,7 @@ export const useExerciseList = (initialExercises: ExerciseRecord[] = []) => {
             ...selectedExercises.map((exercise) => ({
                 id: exercise.id,
                 title: exercise.title,
-                sets: [{ weight: "", reps: "", completed: false }],
+                sets: [{ weight: 0, reps: 0, completed: false }],
             })),
         ];
         setExercises(newExercises);
@@ -31,11 +31,31 @@ export const useExerciseList = (initialExercises: ExerciseRecord[] = []) => {
         setExercises(exercises);
     };
 
+    const moveExerciseUp = (index: number) => {
+        const newOrderExercises = [...exercises];
+        [newOrderExercises[index - 1], newOrderExercises[index]] = [
+            newOrderExercises[index],
+            newOrderExercises[index - 1],
+        ];
+        setExercises(newOrderExercises);
+    };
+
+    const moveExerciseDown = (index: number) => {
+        const newOrderExercises = [...exercises];
+        [newOrderExercises[index], newOrderExercises[index + 1]] = [
+            newOrderExercises[index + 1],
+            newOrderExercises[index],
+        ];
+        setExercises(newOrderExercises);
+    };
+
     return {
         exercises,
         updateExercise,
         deleteExercise,
         addExercises,
         initExerciseList,
+        moveExerciseUp,
+        moveExerciseDown,
     };
 };

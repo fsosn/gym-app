@@ -33,7 +33,7 @@ def create_workout(data, user_id):
             reps = set_data.get("reps", 0)
             distance = set_data.get("distance", 0)
             duration = set_data.get("duration", "00:00")
-            set_volume = weight * reps
+            set_volume = float(weight) * int(reps)
             total_volume += set_volume
             total_sets += 1
 
@@ -137,10 +137,18 @@ def get_all_workouts(user_id, role):
     ], 200
 
 
-def update_workout(workout_id, title, begin_datetime, time, exercises):
+def update_workout(
+    workout_id, user_id, title, begin_datetime, time, exercises
+):
     workout = Workout.query.get(workout_id)
     if not workout:
         return {"message": "Workout not found"}, 404
+
+    if user_id != workout.user_id:
+        return (
+            {"message": "Cannot update another user's workout."},
+            403,
+        )
 
     workout.title = title
     workout.begin_datetime = begin_datetime
@@ -199,3 +207,83 @@ def delete_workout(workout_id, user_id, role):
     db.session.delete(workout)
     db.session.commit()
     return {"message": "Workout deleted successfully"}, 200
+
+
+def patch_workout(
+    workout_id,
+    user_id,
+    title=None,
+    begin_datetime=None,
+    time=None,
+    exercises=None,
+):
+    workout = Workout.query.get(workout_id)
+    if not workout:
+        return {"message": "Workout not found"}, 404
+
+    if user_id != workout.user_id:
+        return (
+            {"message": "Cannot patch another user's workout."},
+            403,
+        )
+
+    if title is not None:
+        workout.title = title
+    if begin_datetime is not None:
+        workout.begin_datetime = begin_datetime
+    if time is not None:
+        workout.time = time
+
+    total_volume = 0
+    total_sets = 0
+
+    if exercises is not None:
+        existing_exercises = {we.id: we for we in workout.exercises}
+
+        for exercise_data in exercises:
+            exercise_id = exercise_data["id"]
+            sets_data = exercise_data["sets"]
+
+            if (
+                "id" in exercise_data
+                and exercise_data["id"] in existing_exercises
+            ):
+                workout_exercise = existing_exercises.pop(exercise_data["id"])
+            else:
+                workout_exercise = WorkoutExercise(
+                    workout_id=workout.id,
+                    exercise_id=exercise_id,
+                )
+                db.session.add(workout_exercise)
+                db.session.commit()
+
+            existing_sets = {s.id: s for s in workout_exercise.sets}
+            for set_data in sets_data:
+                if "id" in set_data and set_data["id"] in existing_sets:
+                    workout_set = existing_sets.pop(set_data["id"])
+                else:
+                    workout_set = Set(workout_exercise_id=workout_exercise.id)
+
+                workout_set.reps = set_data.get("reps", 0)
+                workout_set.weight = set_data.get("weight", 0)
+                workout_set.distance = set_data.get("distance", 0)
+                workout_set.duration = set_data.get("duration", "")
+                db.session.add(workout_set)
+
+                weight = workout_set.weight
+                reps = workout_set.reps
+                set_volume = float(weight) * int(reps)
+                total_volume += set_volume
+                total_sets += 1
+
+            for remaining_set in existing_sets.values():
+                db.session.delete(remaining_set)
+
+        for remaining_exercise in existing_exercises.values():
+            db.session.delete(remaining_exercise)
+
+    workout.volume = total_volume
+    workout.total_sets = total_sets
+
+    db.session.commit()
+    return {"message": "Workout successfully updated."}, 200

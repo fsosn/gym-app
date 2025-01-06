@@ -14,7 +14,6 @@ import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard";
 import DialogSave from "@/components/workout/DialogSave";
 import { useExerciseList } from "@/hooks/useExerciseList";
 import { useToast } from "@/hooks/use-toast";
-import { Set } from "@/types/exercise_types";
 
 export function RoutineForm() {
     const { routineId } = useParams();
@@ -31,6 +30,8 @@ export function RoutineForm() {
         deleteExercise,
         addExercises,
         initExerciseList,
+        moveExerciseUp,
+        moveExerciseDown,
     } = useExerciseList();
     const { toast } = useToast();
 
@@ -59,15 +60,7 @@ export function RoutineForm() {
         const routineData = {
             title,
             description,
-            exercises: exercises.map((exercise) => ({
-                exercise_id: exercise.id,
-                sets: exercise.sets.map((set: Set) => ({
-                    reps: parseInt(set.reps) || 0,
-                    weight: parseFloat(set.weight) || 0,
-                    distance: 0,
-                    duration: "00:00",
-                })),
-            })),
+            exercises,
         };
 
         try {
@@ -147,6 +140,8 @@ export function RoutineForm() {
                         onDelete={deleteExercise}
                         isRoutine={true}
                         isFinishedWorkout={false}
+                        onMoveExerciseUp={moveExerciseUp}
+                        onMoveExerciseDown={moveExerciseDown}
                     />
                     <div className="m-2 mt-2">
                         <Button

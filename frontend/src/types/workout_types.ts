@@ -1,12 +1,15 @@
 import { ExerciseRecord } from "./exercise_types";
 
-export interface Workout {
-    id: number;
-    user_id: number;
+export interface WorkoutRequest {
     title: string;
     begin_datetime: string;
-    time: string;
+    time: number;
+    exercises: ExerciseRecord[];
+}
+
+export interface Workout extends WorkoutRequest {
+    id: number;
+    user_id: number;
     volume: number;
     total_sets: number;
-    exercises: ExerciseRecord[];
 }

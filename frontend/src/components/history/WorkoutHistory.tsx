@@ -33,13 +33,16 @@ export default function WorkoutHistory() {
                     <h2 className="text-xl font-semibold mb-4">
                         Your workout history
                     </h2>
-                    <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {workoutList.map((workout) => (
                             <WorkoutCard
                                 key={workout.id}
                                 title={workout.title}
                                 beginDatetime={workout.begin_datetime}
                                 duration={workout.time}
+                                totalVolume={workout.volume}
+                                totalExercises={workout.exercises.length}
+                                totalSets={workout.total_sets}
                                 onWorkoutCardClick={() =>
                                     handleWorkoutCardClick(workout.id)
                                 }

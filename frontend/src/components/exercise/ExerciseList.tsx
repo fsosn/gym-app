@@ -5,6 +5,8 @@ interface ExerciseListProps {
     exercises: ExerciseRecord[] | null;
     onExerciseChange?: (index: number, newSets: Set[]) => void;
     onDelete?: (index: number) => void;
+    onMoveExerciseUp?: (index: number) => void;
+    onMoveExerciseDown?: (index: number) => void;
     isRoutine: boolean;
     isFinishedWorkout: boolean;
 }
@@ -13,6 +15,8 @@ export function ExerciseList({
     exercises,
     onExerciseChange,
     onDelete,
+    onMoveExerciseUp,
+    onMoveExerciseDown,
     isRoutine,
     isFinishedWorkout,
 }: ExerciseListProps) {
@@ -32,6 +36,16 @@ export function ExerciseList({
                                 : undefined
                         }
                         onDelete={onDelete ? () => onDelete(index) : undefined}
+                        onMoveUp={
+                            onMoveExerciseUp && index > 0
+                                ? () => onMoveExerciseUp(index)
+                                : undefined
+                        }
+                        onMoveDown={
+                            onMoveExerciseDown && index < exercises.length - 1
+                                ? () => onMoveExerciseDown(index)
+                                : undefined
+                        }
                         isRoutine={isRoutine}
                         isFinishedWorkout={isFinishedWorkout}
                     />

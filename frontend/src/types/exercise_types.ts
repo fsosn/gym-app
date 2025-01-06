@@ -57,8 +57,8 @@ export interface Exercise extends BaseExercise {
 }
 
 export interface Set {
-    weight: string;
-    reps: string;
+    weight: number;
+    reps: number;
     completed: boolean;
 }
 

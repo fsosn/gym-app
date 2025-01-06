@@ -23,7 +23,7 @@ def create_routine(data, user_id):
         for exercise_data in data["exercises"]:
             routine_exercise = RoutineExercise(
                 routine_id=routine.id,
-                exercise_id=exercise_data["exercise_id"],
+                exercise_id=exercise_data["id"],
             )
             db.session.add(routine_exercise)
             db.session.flush()
@@ -117,7 +117,7 @@ def update_routine(routine_id, data, user_id):
         for exercise_data in data["exercises"]:
             routine_exercise = RoutineExercise(
                 routine_id=routine.id,
-                exercise_id=exercise_data["exercise_id"],
+                exercise_id=exercise_data["id"],
             )
             db.session.add(routine_exercise)
             db.session.flush()
