@@ -9,6 +9,7 @@ import { RoutineForm } from "@/components/routine/RoutineForm";
 import { Toaster } from "@/components/ui/toaster";
 import HistoryPage from "./pages/HistoryPage";
 import { FinishedWorkout } from "./components/history/FinishedWorkout";
+import StatisticsPage from "./pages/StatisticsPage";
 
 function App() {
     return (
@@ -69,6 +70,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <FinishedWorkout />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/statistics"
+                    element={
+                        <RequireAuth>
+                            <StatisticsPage />
                         </RequireAuth>
                     }
                 />
