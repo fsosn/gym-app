@@ -2,15 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import RoutineCard from "@/components/routine/RoutineCard";
-import { Routine } from "@/types/routine_types.tsx";
-import { fetchRoutine, fetchRoutines } from "@/services/routines";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import Routines from "../routine/Routines";
 
 export default function Workout() {
     const [hasOngoingWorkout, setHasOngoingWorkout] = useState(false);
-    const [routineList, setRoutineList] = useState<Routine[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,48 +13,8 @@ export default function Workout() {
         setHasOngoingWorkout(!!workoutData);
     });
 
-    useEffect(() => {
-        const getRoutines = async () => {
-            try {
-                const routines = await fetchRoutines();
-                setRoutineList(routines);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        getRoutines();
-    }, []);
-
     const handleStartOrResumeWorkoutButtonClick = () => {
         navigate("/workout-log");
-    };
-
-    const handleCreateRoutineButtonClick = () => {
-        navigate("/routine");
-    };
-
-    const handleRoutineCardClick = (routineId: number) => {
-        navigate(`/routine/${routineId}`);
-    };
-
-    const handleStartRoutineButtonClick = async (routineId: number) => {
-        try {
-            const routine = await fetchRoutine(routineId.toString());
-            localStorage.removeItem("workoutStartTime");
-            localStorage.setItem(
-                "workoutLog",
-                JSON.stringify(routine.exercises)
-            );
-            navigate("/workout-log");
-        } catch (error) {
-            console.error(
-                `Failed to start routine with id ${routineId}:`,
-                error
-            );
-        }
     };
 
     return (
@@ -88,39 +43,7 @@ export default function Workout() {
                     </Button>
                 </div>
                 <div>
-                    <h2 className="text-xl font-semibold mb-4">Routines</h2>
-                    <Button
-                        className="mb-4"
-                        onClick={handleCreateRoutineButtonClick}
-                    >
-                        <div className="flex items-center space-x-2">
-                            <Plus className="w-4 h-4" />
-                            <span>Create routine</span>
-                        </div>
-                    </Button>
-                    {isLoading ? (
-                        <div className="flex justify-center items-center w-full min-h-64">
-                            <LoadingSpinner size={64} />
-                        </div>
-                    ) : (
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {routineList.map((routine) => (
-                                <RoutineCard
-                                    key={routine.id}
-                                    title={routine.title}
-                                    description={routine.description}
-                                    onStart={() =>
-                                        handleStartRoutineButtonClick(
-                                            routine.id
-                                        )
-                                    }
-                                    onRoutineCardClick={() =>
-                                        handleRoutineCardClick(routine.id)
-                                    }
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <Routines />
                 </div>
             </div>
         </div>
