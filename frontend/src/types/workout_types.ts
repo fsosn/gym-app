@@ -1,4 +1,5 @@
 import { ExerciseRecord } from "./exercise_types";
+import { Pagination } from "./pagination_types";
 
 export interface WorkoutRequest {
     title: string;
@@ -12,4 +13,9 @@ export interface Workout extends WorkoutRequest {
     user_id: number;
     volume: number;
     total_sets: number;
+}
+
+export interface WorkoutPaginationResponse {
+    workouts: Workout[];
+    pagination: Pagination;
 }

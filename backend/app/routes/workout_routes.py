@@ -33,7 +33,12 @@ def get_all_workouts():
     identity = get_jwt_identity()
     user_id = identity.get("id")
     role = identity.get("role")
-    result, status_code = workout_service.get_all_workouts(user_id, role)
+    args = request.args
+    page = int(args.get("page", default=1))
+    per_page = int(args.get("per_page", default=10))
+    result, status_code = workout_service.get_workouts(
+        user_id, role, page, per_page
+    )
     return jsonify(result), status_code
 
 

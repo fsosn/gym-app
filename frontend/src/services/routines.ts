@@ -8,7 +8,8 @@ export const fetchRoutinesPage = async (
 ): Promise<RoutinePaginationResponse> => {
     try {
         const response = await axios.get<RoutinePaginationResponse>(
-            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}?page=${page}&per_page=${perPage}`
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}` +
+                `?${API_ENDPOINTS.PAGE}=${page}&${API_ENDPOINTS.PER_PAGE}=${perPage}`
         );
         return response.data;
     } catch (error) {

@@ -34,9 +34,7 @@ def get_all_routines():
     per_page = int(args.get("per_page", default=3))
     identity = get_jwt_identity()
     user_id = identity.get("id")
-    result, status_code = routine_service.get_all_routines(
-        user_id, page, per_page
-    )
+    result, status_code = routine_service.get_routines(user_id, page, per_page)
     return jsonify(result), status_code
 
 
