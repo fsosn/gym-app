@@ -29,9 +29,12 @@ def get_routine(routine_id):
 @routine_bp.route("/routines", methods=["GET"])
 @jwt_required()
 def get_all_routines():
+    args = request.args
+    page = int(args.get("page", default=1))
+    per_page = int(args.get("per_page", default=3))
     identity = get_jwt_identity()
     user_id = identity.get("id")
-    result, status_code = routine_service.get_all_routines(user_id)
+    result, status_code = routine_service.get_routines(user_id, page, per_page)
     return jsonify(result), status_code
 
 

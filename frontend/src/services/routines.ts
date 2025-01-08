@@ -1,11 +1,15 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
-import { Routine } from "@/types/routine_types";
+import { Routine, RoutinePaginationResponse } from "@/types/routine_types";
 
-export const fetchRoutines = async (): Promise<Routine[]> => {
+export const fetchRoutinesPage = async (
+    page: number = 1,
+    perPage: number = 3
+): Promise<RoutinePaginationResponse> => {
     try {
-        const response = await axios.get<Routine[]>(
-            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}`
+        const response = await axios.get<RoutinePaginationResponse>(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.ROUTINES}` +
+                `?${API_ENDPOINTS.PAGE}=${page}&${API_ENDPOINTS.PER_PAGE}=${perPage}`
         );
         return response.data;
     } catch (error) {

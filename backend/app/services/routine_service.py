@@ -83,8 +83,12 @@ def get_routine_by_id(routine_id, user_id):
     return routine_data, 200
 
 
-def get_all_routines(user_id):
-    routines = Routine.query.filter_by(user_id=user_id).all()
+def get_routines(user_id, page, per_page):
+    routines = db.paginate(
+        db.select(Routine).filter_by(user_id=user_id),
+        page=page,
+        per_page=per_page,
+    )
     routines_data = [
         {
             "id": routine.id,
@@ -93,7 +97,9 @@ def get_all_routines(user_id):
         }
         for routine in routines
     ]
-    return routines_data, 200
+    pagination_info = {"pages": routines.pages, "current": routines.page}
+
+    return {"routines": routines_data, "pagination": pagination_info}, 200
 
 
 def update_routine(routine_id, data, user_id):

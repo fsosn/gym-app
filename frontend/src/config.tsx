@@ -7,6 +7,8 @@ export const API_ENDPOINTS = {
     WORKOUTS: "/workouts",
     ROUTINES: "/routines",
     STATISTICS: "/stats",
+    PAGE: "page",
+    PER_PAGE: "per_page",
 } as const;
 
 export const API_ENDPOINTS_STATS = {

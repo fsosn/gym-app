@@ -97,17 +97,23 @@ def get_workout_by_id(workout_id, user_id, role):
     )
 
 
-def get_all_workouts(user_id, role):
+def get_workouts(user_id, role, page, per_page):
     if role == "ADMIN":
-        workouts = Workout.query.order_by(desc(Workout.begin_datetime)).all()
+        workouts = db.paginate(
+            db.select(Workout).order_by(Workout.begin_datetime.desc()),
+            page=page,
+            per_page=per_page,
+        )
     else:
-        workouts = (
-            Workout.query.filter_by(user_id=user_id)
-            .order_by(desc(Workout.begin_datetime))
-            .all()
+        workouts = db.paginate(
+            db.select(Workout)
+            .filter_by(user_id=user_id)
+            .order_by(Workout.begin_datetime.desc()),
+            page=page,
+            per_page=per_page,
         )
 
-    return [
+    workout_data = [
         {
             "id": workout.id,
             "user_id": workout.user_id,
@@ -134,7 +140,11 @@ def get_all_workouts(user_id, role):
             ],
         }
         for workout in workouts
-    ], 200
+    ]
+
+    pagination_info = {"pages": workouts.pages, "current": workouts.page}
+
+    return {"workouts": workout_data, "pagination": pagination_info}, 200
 
 
 def update_workout(

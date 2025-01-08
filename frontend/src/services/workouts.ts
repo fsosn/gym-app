@@ -1,6 +1,10 @@
 import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
-import { Workout, WorkoutRequest } from "@/types/workout_types";
+import {
+    Workout,
+    WorkoutPaginationResponse,
+    WorkoutRequest,
+} from "@/types/workout_types";
 
 export const postWorkout = async (workoutData: WorkoutRequest) => {
     try {
@@ -14,10 +18,14 @@ export const postWorkout = async (workoutData: WorkoutRequest) => {
     }
 };
 
-export const fetchWorkouts = async (): Promise<Workout[]> => {
+export const fetchWorkoutsPage = async (
+    page: number = 1,
+    perPage: number = 3
+): Promise<WorkoutPaginationResponse> => {
     try {
-        const response = await axios.get<Workout[]>(
-            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}`
+        const response = await axios.get<WorkoutPaginationResponse>(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.WORKOUTS}` +
+                `?${API_ENDPOINTS.PAGE}=${page}&${API_ENDPOINTS.PER_PAGE}=${perPage}`
         );
         return response.data;
     } catch (error) {
