@@ -4,6 +4,7 @@ import { ArrowLeft, Ellipsis, Pencil, Repeat2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WorkoutSummaryCards } from "@/components/workout/workout_details/WorkoutSummaryCards";
 import { ExerciseList } from "@/components/exercise/ExerciseList";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { deleteWorkout, fetchWorkout } from "@/services/workouts";
 import { ExerciseRecord } from "@/types/exercise_types";
 import { Workout } from "@/types/workout_types";
@@ -26,6 +27,7 @@ export function FinishedWorkout() {
     const [duration, setDuration] = useState<number>(0);
     const [totalSets, setTotalSets] = useState<number>(0);
     const [totalVolume, setTotalVolume] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -47,6 +49,8 @@ export function FinishedWorkout() {
                         "There was a problem while fetching your workout.",
                 });
                 navigate("/history");
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -146,13 +150,19 @@ export function FinishedWorkout() {
                 />
             </div>
             <div className="flex flex-col items-center">
-                <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
-                    <ExerciseList
-                        exercises={exercises}
-                        isRoutine={false}
-                        isFinishedWorkout={true}
-                    />
-                </div>
+                {isLoading ? (
+                    <div className="flex justify-center items-center w-full min-h-64">
+                        <LoadingSpinner size={64} />
+                    </div>
+                ) : (
+                    <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
+                        <ExerciseList
+                            exercises={exercises}
+                            isRoutine={false}
+                            isFinishedWorkout={true}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

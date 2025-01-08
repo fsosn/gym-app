@@ -46,7 +46,7 @@ const auth: Auth = {
             );
 
             if (response.status !== 200) {
-                alert(response.data.message);
+                onFailure(response.data.message);
                 return;
             }
 

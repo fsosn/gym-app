@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import RoutineCard from "@/components/routine/RoutineCard";
 import { Routine } from "@/types/routine_types.tsx";
 import { fetchRoutine, fetchRoutines } from "@/services/routines";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function Workout() {
     const [hasOngoingWorkout, setHasOngoingWorkout] = useState(false);
     const [routineList, setRoutineList] = useState<Routine[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,6 +25,8 @@ export default function Workout() {
                 setRoutineList(routines);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -94,21 +98,29 @@ export default function Workout() {
                             <span>Create routine</span>
                         </div>
                     </Button>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {routineList.map((routine) => (
-                            <RoutineCard
-                                key={routine.id}
-                                title={routine.title}
-                                description={routine.description}
-                                onStart={() =>
-                                    handleStartRoutineButtonClick(routine.id)
-                                }
-                                onRoutineCardClick={() =>
-                                    handleRoutineCardClick(routine.id)
-                                }
-                            />
-                        ))}
-                    </div>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center w-full min-h-64">
+                            <LoadingSpinner size={64} />
+                        </div>
+                    ) : (
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {routineList.map((routine) => (
+                                <RoutineCard
+                                    key={routine.id}
+                                    title={routine.title}
+                                    description={routine.description}
+                                    onStart={() =>
+                                        handleStartRoutineButtonClick(
+                                            routine.id
+                                        )
+                                    }
+                                    onRoutineCardClick={() =>
+                                        handleRoutineCardClick(routine.id)
+                                    }
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
