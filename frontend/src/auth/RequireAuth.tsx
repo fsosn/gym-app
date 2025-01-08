@@ -1,27 +1,27 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useContext, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
-import { Spinner } from "@/components/ui/spinner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface RequireAuthProps {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 export function RequireAuth({ children }: RequireAuthProps) {
-  const auth = useContext(AuthContext);
-  const location = useLocation();
+    const auth = useContext(AuthContext);
+    const location = useLocation();
 
-  if (auth?.authenticated === null) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Spinner size={64} />
-      </div>
-    );
-  }
+    if (auth?.authenticated === null) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <LoadingSpinner size={64} />
+            </div>
+        );
+    }
 
-  if (!auth?.authenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+    if (!auth?.authenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
-  return <>{children}</>;
+    return <>{children}</>;
 }
