@@ -10,9 +10,11 @@ import {
     TableCell,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function TopExercises() {
-    const [topExercises, setTopExercises] = useState<TopExerciseType[]>();
+    const [topExercises, setTopExercises] = useState<TopExerciseType[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const getTotalWorkouts = async () => {
@@ -21,6 +23,8 @@ export function TopExercises() {
                 setTopExercises(data);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -35,7 +39,11 @@ export function TopExercises() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                {topExercises ? (
+                {isLoading ? (
+                    <div className="flex justify-center items-center w-full min-h-64">
+                        <LoadingSpinner size={48} />
+                    </div>
+                ) : (
                     <Table className="text-base">
                         <TableHeader>
                             <TableRow>
@@ -54,10 +62,6 @@ export function TopExercises() {
                             ))}
                         </TableBody>
                     </Table>
-                ) : (
-                    <span className="sm: text-lg lg:text-xl font-semibold">
-                        No exercise ranking available right now.
-                    </span>
                 )}
             </CardContent>
         </Card>

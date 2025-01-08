@@ -12,6 +12,7 @@ import { ExerciseList } from "@/components/exercise/ExerciseList";
 import ExerciseSelection from "@/components/exercise/exerciseSelection/ExerciseSelection";
 import { AlertDialogDiscard } from "@/components/workout/AlertDialogDiscard";
 import DialogSave from "@/components/workout/DialogSave";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useExerciseList } from "@/hooks/useExerciseList";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,6 +24,7 @@ export function RoutineForm() {
     const [displayedTitle, setDisplayedTitle] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useNavigate();
     const {
         exercises,
@@ -45,6 +47,7 @@ export function RoutineForm() {
                 initExerciseList(routine.exercises);
             });
         }
+        setIsLoading(false);
     }, [routineId]);
 
     const handleCreateOrUpdateButtonClick = async () => {
@@ -133,44 +136,52 @@ export function RoutineForm() {
                 </div>
             </nav>
             <div className="flex flex-col items-center">
-                <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
-                    <ExerciseList
-                        exercises={exercises}
-                        onExerciseChange={updateExercise}
-                        onDelete={deleteExercise}
-                        isRoutine={true}
-                        isFinishedWorkout={false}
-                        onMoveExerciseUp={moveExerciseUp}
-                        onMoveExerciseDown={moveExerciseDown}
-                    />
-                    <div className="m-2 mt-2">
-                        <Button
-                            onClick={() => setShowExerciseSelectionModal(true)}
-                            className="w-full"
-                        >
-                            <Plus className="w-4 h-4 mr-1" />
-                            <span>Add Exercise</span>
-                        </Button>
-                        {showExerciseSelectionModal && (
-                            <ExerciseSelection
-                                onAddExercises={(newExercises) => {
-                                    addExercises(newExercises);
-                                    toggleExerciseModal();
-                                }}
-                                onCancel={toggleExerciseModal}
-                            />
-                        )}
+                {isLoading ? (
+                    <div className="flex justify-center items-center w-full h-full">
+                        <LoadingSpinner size={64} />
                     </div>
-                    {isUpdateMode ? (
-                        <div className="m-2 mt-2 pb-6">
-                            <AlertDialogDiscard
-                                label="Discard Routine"
-                                description="Please remember, this action cannot be undone."
-                                onDiscard={handleDeleteRoutineButtonClick}
-                            />
+                ) : (
+                    <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
+                        <ExerciseList
+                            exercises={exercises}
+                            onExerciseChange={updateExercise}
+                            onDelete={deleteExercise}
+                            isRoutine={true}
+                            isFinishedWorkout={false}
+                            onMoveExerciseUp={moveExerciseUp}
+                            onMoveExerciseDown={moveExerciseDown}
+                        />
+                        <div className="m-2 mt-2">
+                            <Button
+                                onClick={() =>
+                                    setShowExerciseSelectionModal(true)
+                                }
+                                className="w-full"
+                            >
+                                <Plus className="w-4 h-4 mr-1" />
+                                <span>Add Exercise</span>
+                            </Button>
+                            {showExerciseSelectionModal && (
+                                <ExerciseSelection
+                                    onAddExercises={(newExercises) => {
+                                        addExercises(newExercises);
+                                        toggleExerciseModal();
+                                    }}
+                                    onCancel={toggleExerciseModal}
+                                />
+                            )}
                         </div>
-                    ) : null}
-                </div>
+                        {isUpdateMode ? (
+                            <div className="m-2 mt-2 pb-6">
+                                <AlertDialogDiscard
+                                    label="Discard Routine"
+                                    description="Please remember, this action cannot be undone."
+                                    onDiscard={handleDeleteRoutineButtonClick}
+                                />
+                            </div>
+                        ) : null}
+                    </div>
+                )}
             </div>
         </div>
     );

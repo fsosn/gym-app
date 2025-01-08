@@ -14,6 +14,7 @@ import { ExerciseRecord, Set } from "@/types/exercise_types";
 import { Workout } from "@/types/workout_types";
 import { patchWorkout, postWorkout } from "@/services/workouts";
 import { formatDuration } from "@/utils/time_utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function WorkoutLog() {
     const [isEditMode, setIsEditMode] = useState<boolean | null>(null);
@@ -35,6 +36,7 @@ export function WorkoutLog() {
         startTime,
         exercises
     );
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const { toast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
@@ -55,6 +57,7 @@ export function WorkoutLog() {
                     })),
                 }))
             );
+            setIsLoading(false);
         } else {
             setIsEditMode(false);
             const storedStartTime =
@@ -66,6 +69,7 @@ export function WorkoutLog() {
             );
             setStartTime(storedStartTime);
             initExerciseList(storedExercises);
+            setIsLoading(false);
         }
     }, []);
 
@@ -168,81 +172,95 @@ export function WorkoutLog() {
 
     return (
         <div>
-            <nav className="w-full flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-zinc-700">
-                <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={handleGoBackButtonClick}
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                </Button>
-                <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
-                    {isEditMode ? title : "Workout Log"}
-                </h1>
-                <DialogSave
-                    title={title}
-                    setTitle={setTitle}
-                    handleSave={handleSaveWorkout}
-                    buttonLabel={isEditMode ? "Update" : "Finish"}
-                    dialogTitle={
-                        isEditMode ? "Update Workout" : "Finish Workout"
-                    }
-                    dialogDescription="Please add a title for your workout. Click save when
+            <div>
+                <nav className="w-full flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-zinc-700">
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={handleGoBackButtonClick}
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                    </Button>
+                    <h1 className="text-xl font-bold text-zinc-950 dark:text-zinc-100">
+                        {isEditMode ? title : "Workout Log"}
+                    </h1>
+                    <DialogSave
+                        title={title}
+                        setTitle={setTitle}
+                        handleSave={handleSaveWorkout}
+                        buttonLabel={isEditMode ? "Update" : "Finish"}
+                        dialogTitle={
+                            isEditMode ? "Update Workout" : "Finish Workout"
+                        }
+                        dialogDescription="Please add a title for your workout. Click save when
                         you're done."
-                    isActive={completedSetsCount != 0}
-                    isRoutine={false}
-                    description={undefined}
-                    setDescription={() => {}}
-                />
-            </nav>
-            <div className="p-2">
-                <WorkoutSummaryCards
-                    duration={formatDuration(duration)}
-                    totalVolume={totalVolume}
-                    completedSets={completedSetsCount}
-                />
-            </div>
-            <div className="flex flex-col items-center">
-                <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
-                    <ExerciseList
-                        exercises={exercises}
-                        onExerciseChange={updateExercise}
-                        onDelete={deleteExercise}
-                        onMoveExerciseUp={moveExerciseUp}
-                        onMoveExerciseDown={moveExerciseDown}
+                        isActive={completedSetsCount != 0}
                         isRoutine={false}
-                        isFinishedWorkout={false}
+                        description={undefined}
+                        setDescription={() => {}}
                     />
-                    <div className="m-2 mt-2">
-                        <Button
-                            onClick={() => setShowExerciseSelectionModal(true)}
-                            className="w-full"
-                        >
-                            <Plus className="w-4 h-4 mr-1" />
-                            <span>Add Exercise</span>
-                        </Button>
-                        {showExerciseSelectionModal && (
-                            <ExerciseSelection
-                                onAddExercises={(newExercises) => {
-                                    addExercises(newExercises);
-                                    toggleExerciseModal();
-                                }}
-                                onCancel={toggleExerciseModal}
-                            />
-                        )}
-                    </div>
-                    {!isEditMode && (
-                        <div className="m-2 mt-2 pb-6">
-                            <AlertDialogDiscard
-                                label="Discard Workout"
-                                description="If you discard this workout, all unsaved
-                                        changes will be lost."
-                                onDiscard={handleDiscardWorkoutButtonClick}
-                            />
-                        </div>
-                    )}
-                </div>
+                </nav>
             </div>
+            {isLoading ? (
+                <div className="flex justify-center items-center w-full min-h-64">
+                    <LoadingSpinner size={64} />
+                </div>
+            ) : (
+                <div>
+                    <div className="p-2">
+                        <WorkoutSummaryCards
+                            duration={formatDuration(duration)}
+                            totalVolume={totalVolume}
+                            completedSets={completedSetsCount}
+                        />
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <div className="w-full sm:max-w-md md:max-w-md lg:max-w-xl xl:max-w-xl mx-auto">
+                            <ExerciseList
+                                exercises={exercises}
+                                onExerciseChange={updateExercise}
+                                onDelete={deleteExercise}
+                                onMoveExerciseUp={moveExerciseUp}
+                                onMoveExerciseDown={moveExerciseDown}
+                                isRoutine={false}
+                                isFinishedWorkout={false}
+                            />
+                            <div className="m-2 mt-2">
+                                <Button
+                                    onClick={() =>
+                                        setShowExerciseSelectionModal(true)
+                                    }
+                                    className="w-full"
+                                >
+                                    <Plus className="w-4 h-4 mr-1" />
+                                    <span>Add Exercise</span>
+                                </Button>
+                                {showExerciseSelectionModal && (
+                                    <ExerciseSelection
+                                        onAddExercises={(newExercises) => {
+                                            addExercises(newExercises);
+                                            toggleExerciseModal();
+                                        }}
+                                        onCancel={toggleExerciseModal}
+                                    />
+                                )}
+                            </div>
+                            {!isEditMode && (
+                                <div className="m-2 mt-2 pb-6">
+                                    <AlertDialogDiscard
+                                        label="Discard Workout"
+                                        description="If you discard this workout, all unsaved
+                                        changes will be lost."
+                                        onDiscard={
+                                            handleDiscardWorkoutButtonClick
+                                        }
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

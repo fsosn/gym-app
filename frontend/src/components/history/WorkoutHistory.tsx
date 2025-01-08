@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Workout } from "@/types/workout_types";
 import { fetchWorkouts } from "@/services/workouts";
 import WorkoutCard from "./WorkoutCard";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function WorkoutHistory() {
     const [workoutList, setWorkoutList] = useState<Workout[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,6 +17,8 @@ export default function WorkoutHistory() {
                 setWorkoutList(workouts);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -33,22 +37,28 @@ export default function WorkoutHistory() {
                     <h2 className="text-xl font-semibold mb-4">
                         Your workout history
                     </h2>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {workoutList.map((workout) => (
-                            <WorkoutCard
-                                key={workout.id}
-                                title={workout.title}
-                                beginDatetime={workout.begin_datetime}
-                                duration={workout.time}
-                                totalVolume={workout.volume}
-                                totalExercises={workout.exercises.length}
-                                totalSets={workout.total_sets}
-                                onWorkoutCardClick={() =>
-                                    handleWorkoutCardClick(workout.id)
-                                }
-                            />
-                        ))}
-                    </div>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center w-full h-full min-h-64">
+                            <LoadingSpinner size={64} />
+                        </div>
+                    ) : (
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {workoutList.map((workout) => (
+                                <WorkoutCard
+                                    key={workout.id}
+                                    title={workout.title}
+                                    beginDatetime={workout.begin_datetime}
+                                    duration={workout.time}
+                                    totalVolume={workout.volume}
+                                    totalExercises={workout.exercises.length}
+                                    totalSets={workout.total_sets}
+                                    onWorkoutCardClick={() =>
+                                        handleWorkoutCardClick(workout.id)
+                                    }
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

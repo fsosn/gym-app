@@ -15,8 +15,5 @@ export const API_ENDPOINTS_STATS = {
     TOP_EXERCISES: "/top_exercises",
     MUSCLE_DISTRIBUTION: "/muscle_distribution",
     WORKOUTS_OVER_TIME: "/workouts_over_time",
-    PERIOD_WEEKLY: "/weekly",
-    PERIOD_MONTHLY: "/monthly",
-    PERIOD_YEARLY: "/yearly",
     STREAK: "/streak",
 } as const;
