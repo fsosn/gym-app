@@ -60,6 +60,23 @@ export function RoutineForm() {
             return;
         }
 
+        if (title.length > 50) {
+            toast({
+                title: "Title is too long",
+                description: "Title should contain maximum 50 characters.",
+            });
+            return;
+        }
+
+        if (description.length > 255) {
+            toast({
+                title: "Description is too long",
+                description:
+                    "Description should contain maximum 255 characters.",
+            });
+            return;
+        }
+
         const routineData = {
             title,
             description,

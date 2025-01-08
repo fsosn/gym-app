@@ -100,6 +100,14 @@ export function WorkoutLog() {
             return;
         }
 
+        if (title.length > 50) {
+            toast({
+                title: "Title is too long",
+                description: "Title should contain maximum 50 characters.",
+            });
+            return;
+        }
+
         if (
             exercises.some((exercise) =>
                 exercise.sets.some((set: Set) => !set.completed)
