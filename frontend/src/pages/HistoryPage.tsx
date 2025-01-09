@@ -3,7 +3,7 @@ import Page from "./template/Page";
 
 export default function HistoryPage() {
     return (
-        <Page>
+        <Page title="History">
             <WorkoutHistory />
         </Page>
     );
