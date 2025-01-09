@@ -23,7 +23,7 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
     return (
         <Card
             onClick={onRoutineCardClick}
-            className="hover:bg-zinc-900 cursor-pointer"
+            className="hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer"
         >
             <CardHeader>
                 <CardTitle>{title}</CardTitle>

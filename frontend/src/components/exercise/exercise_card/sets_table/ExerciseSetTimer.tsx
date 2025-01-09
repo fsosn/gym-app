@@ -106,7 +106,11 @@ export const ExerciseSetTimer: React.FC<ExerciseSetTimerProps> = ({
     return (
         <div className="flex items-center">
             <Input
-                className={`h-9 flex-grow ${isCompleted ? "bg-green-950" : ""}`}
+                className={`h-9 flex-grow ${
+                    isCompleted
+                        ? "bg-green-400 hover:bg-green-300 dark:bg-green-950"
+                        : ""
+                }`}
                 value={input}
                 onChange={handleManualChange}
                 onBlur={handleBlur}

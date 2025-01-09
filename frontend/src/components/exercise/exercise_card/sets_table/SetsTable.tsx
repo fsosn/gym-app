@@ -62,8 +62,13 @@ export const SetsTable: React.FC<SetsTableProps> = ({
         }
     };
 
-    const selectedInputStyle = (set: Set) =>
-        set.completed ? "bg-green-950 hover:bg-green-950" : "";
+    const completedSetRowStyle = (set: Set) =>
+        set.completed ? "bg-green-500  dark:bg-green-900 " : "";
+
+    const completedSetInputStyle = (set: Set) =>
+        set.completed
+            ? "bg-green-400 hover:bg-green-300 dark:bg-green-950 dark:hover:bg-green-950"
+            : "";
 
     return (
         <div>
@@ -111,9 +116,7 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                         <TableRow key={index} className="contents">
                             {!isFinishedWorkout && (
                                 <TableCell
-                                    className={`text-center ${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={completedSetRowStyle(set)}
                                 >
                                     <Button
                                         size="sm"
@@ -125,20 +128,18 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                                 </TableCell>
                             )}
                             <TableCell
-                                className={`flex items-center h-full w-full ${
-                                    set.completed ? "bg-green-900" : ""
-                                }`}
+                                className={`flex items-center h-full w-full ${completedSetRowStyle(
+                                    set
+                                )}`}
                             >
                                 {index + 1}
                             </TableCell>
                             {typeFlags.isWeight && (
                                 <TableCell
-                                    className={`${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={completedSetRowStyle(set)}
                                 >
                                     <Input
-                                        className={selectedInputStyle(set)}
+                                        className={completedSetInputStyle(set)}
                                         disabled={isFinishedWorkout}
                                         value={set.weight}
                                         onChange={(e) => {
@@ -156,12 +157,10 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                             )}
                             {typeFlags.isReps && (
                                 <TableCell
-                                    className={`${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={completedSetRowStyle(set)}
                                 >
                                     <Input
-                                        className={selectedInputStyle(set)}
+                                        className={completedSetInputStyle(set)}
                                         disabled={isFinishedWorkout}
                                         value={set.reps}
                                         onChange={(e) => {
@@ -178,12 +177,10 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                             )}
                             {typeFlags.isDistance && (
                                 <TableCell
-                                    className={`${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={completedSetRowStyle(set)}
                                 >
                                     <Input
-                                        className={selectedInputStyle(set)}
+                                        className={completedSetInputStyle(set)}
                                         disabled={isFinishedWorkout}
                                         value={set.distance}
                                         onChange={(e) => {
@@ -201,9 +198,7 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                             )}
                             {typeFlags.isDuration && (
                                 <TableCell
-                                    className={`${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={completedSetRowStyle(set)}
                                 >
                                     <ExerciseSetTimer
                                         timeSet={set.duration || 0}
@@ -224,17 +219,18 @@ export const SetsTable: React.FC<SetsTableProps> = ({
                             )}
                             {!isRoutine && !isFinishedWorkout && (
                                 <TableCell
-                                    className={`flex justify-center items-center w-full h-full ${
-                                        set.completed ? "bg-green-900" : ""
-                                    }`}
+                                    className={`flex justify-center items-center w-full h-full ${completedSetRowStyle(
+                                        set
+                                    )}`}
                                 >
                                     <Button
                                         size="sm"
-                                        variant={
+                                        className={
                                             set.completed
-                                                ? "default"
-                                                : "secondary"
+                                                ? "bg-green-600 hover:bg-green-400"
+                                                : ""
                                         }
+                                        variant={"secondary"}
                                         onClick={() =>
                                             handleSetCompletion(index)
                                         }

@@ -86,7 +86,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-zinc-900 p-4 rounded-lg w-96">
+            <div className="bg-zinc-100 dark:bg-zinc-900 p-4 rounded-lg w-96">
                 <h2 className="text-lg font-bold mb-4">Select Exercises</h2>
                 <ExerciseFilters setFilters={setFilters} />
                 <ExerciseTable

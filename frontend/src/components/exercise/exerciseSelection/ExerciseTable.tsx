@@ -38,11 +38,11 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                     {exercises.map((exercise) => (
                         <TableRow
                             key={exercise.id}
-                            className={
-                                isExerciseSelected(exercise)
-                                    ? "bg-zinc-800 cursor-pointer"
-                                    : "hover:bg-zinc-800 cursor-pointer"
-                            }
+                            className={`
+                                ${
+                                    isExerciseSelected(exercise) &&
+                                    "bg-zinc-300 dark:bg-zinc-800"
+                                } " hover:bg-zinc-300 dark:hover:bg-zinc-800 cursor-pointer"`}
                             onClick={() => toggleSelection(exercise)}
                         >
                             <TableCell>
