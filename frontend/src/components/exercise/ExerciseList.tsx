@@ -1,4 +1,4 @@
-import { ExerciseCard } from "@/components/exercise/ExerciseCard";
+import { ExerciseCard } from "@/components/exercise/exercise_card/ExerciseCard";
 import { ExerciseRecord, Set } from "@/types/exercise_types";
 
 interface ExerciseListProps {
@@ -28,6 +28,7 @@ export function ExerciseList({
                     <ExerciseCard
                         key={index}
                         exerciseName={exercise.title}
+                        exerciseType={exercise.exercise_type!}
                         sets={exercise.sets}
                         onSetsChange={
                             onExerciseChange

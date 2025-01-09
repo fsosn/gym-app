@@ -10,4 +10,4 @@ class RoutineSet(db.Model):
     reps = db.Column(db.Integer, default=0)
     weight = db.Column(db.Float, default=0)
     distance = db.Column(db.Float, default=0)
-    duration = db.Column(db.String(10), default="00:00")
+    duration = db.Column(db.Integer, default=0)

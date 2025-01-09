@@ -50,18 +50,21 @@ interface BaseExercise {
 }
 
 export interface Exercise extends BaseExercise {
-    primary_muscle: string;
-    other_muscles: string[];
-    equipment: string;
-    exercise_type: string;
+    primary_muscle: MuscleCategory;
+    other_muscles: MuscleCategory[];
+    equipment: Equipment;
+    exercise_type: ExerciseType;
 }
 
 export interface Set {
-    weight: number;
-    reps: number;
+    weight?: number;
+    reps?: number;
+    distance?: number;
+    duration?: number;
     completed: boolean;
 }
 
 export interface ExerciseRecord extends BaseExercise {
     sets: Set[];
+    exercise_type: ExerciseType;
 }

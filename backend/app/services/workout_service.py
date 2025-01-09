@@ -32,7 +32,7 @@ def create_workout(data, user_id):
             weight = set_data.get("weight", 0)
             reps = set_data.get("reps", 0)
             distance = set_data.get("distance", 0)
-            duration = set_data.get("duration", "00:00")
+            duration = set_data.get("duration", 0)
             set_volume = float(weight) * int(reps)
             total_volume += set_volume
             total_sets += 1
@@ -79,7 +79,20 @@ def get_workout_by_id(workout_id, user_id, role):
             "exercises": [
                 {
                     "id": we.exercise_id,
-                    "title": Exercise.query.get(we.exercise_id).title,
+                    "title": db.session.execute(
+                        db.select(Exercise).filter(
+                            Exercise.id == we.exercise_id
+                        )
+                    )
+                    .scalar_one()
+                    .title,
+                    "exercise_type": db.session.execute(
+                        db.select(Exercise).filter(
+                            Exercise.id == we.exercise_id
+                        )
+                    )
+                    .scalar_one()
+                    .exercise_type,
                     "sets": [
                         {
                             "reps": s.reps,
