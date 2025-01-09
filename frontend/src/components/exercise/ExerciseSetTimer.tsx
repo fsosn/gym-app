@@ -7,18 +7,23 @@ interface ExerciseSetTimerProps {
     timeSet: number;
     onDurationChange?: (duration: number) => void;
     isActive: boolean;
+    isCompleted: boolean;
 }
 
 export default function ExerciseSetTimer({
     timeSet,
     onDurationChange,
     isActive,
+    isCompleted,
 }: ExerciseSetTimerProps) {
-    const [time, setTime] = useState(timeSet ? timeSet : 0);
+    const [time, setTime] = useState(timeSet);
     const [timeInterval, setTimeInterval] = useState<NodeJS.Timeout | null>(
         null
     );
     const [isRunning, setIsRunning] = useState<boolean>(false);
+
+    const DEFAULT_VALUE = "00:00:00";
+
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -28,7 +33,7 @@ export default function ExerciseSetTimer({
             "0"
         )}:${String(secs).padStart(2, "0")}`;
     };
-    const DEFAULT_VALUE = "00:00:00";
+
     const [input, setInput] = useState<string>(
         timeSet ? formatTime(timeSet) : DEFAULT_VALUE
     );
@@ -50,6 +55,20 @@ export default function ExerciseSetTimer({
         }
         setIsRunning(false);
     };
+
+    useEffect(() => {
+        if (isRunning) {
+            setInput(formatTime(time));
+            if (onDurationChange) {
+                onDurationChange(time);
+            }
+        }
+    }, [time, isRunning]);
+
+    useEffect(() => {
+        setTime(timeSet);
+        setInput(formatTime(timeSet));
+    }, [timeSet]);
 
     const handleStartPause = () => {
         if (isRunning) {
@@ -77,15 +96,6 @@ export default function ExerciseSetTimer({
         setTime(hours * 3600 + minutes * 60 + seconds);
     };
 
-    useEffect(() => {
-        if (isRunning) {
-            setInput(formatTime(time));
-            if (onDurationChange) {
-                onDurationChange(time);
-            }
-        }
-    }, [time, isRunning]);
-
     const handleBlur = () => {
         const timeRegex = /^([0-9]{2}):([0-5][0-9]):([0-5][0-9])$/;
         if (!input || !timeRegex.test(input)) {
@@ -97,7 +107,7 @@ export default function ExerciseSetTimer({
     return (
         <div className="flex items-center">
             <Input
-                className="flex-grow max-w-20"
+                className={`h-9 flex-grow ${isCompleted ? "bg-green-950" : ""}`}
                 value={input}
                 onChange={handleManualChange}
                 onBlur={handleBlur}
@@ -107,8 +117,8 @@ export default function ExerciseSetTimer({
             {isActive && (
                 <Button
                     onClick={handleStartPause}
-                    size={"sm"}
-                    variant={"secondary"}
+                    size="sm"
+                    variant="secondary"
                 >
                     {isRunning ? (
                         <Pause className="w-4 h-4" />
