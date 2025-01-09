@@ -81,11 +81,8 @@ export function ExerciseCard({
         }
     };
 
-    const selectedStyle = (set: Set) => {
-        return set.completed ? "bg-green-900 hover:bg-green-800" : "";
-    };
     const selectedInputStyle = (set: Set) => {
-        return set.completed ? "w-12 bg-green-950 hover:bg-green-950" : "w-12";
+        return set.completed ? "bg-green-950 hover:bg-green-950" : "";
     };
 
     const checkExerciseType = () => {
@@ -160,39 +157,55 @@ export function ExerciseCard({
                     )}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-1">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {isFinishedWorkout ? null : (
-                                <TableHead className="flex justify-center items-center"></TableHead>
+            <CardContent className="p-2">
+                <Table
+                    className={`table-fixed w-full grid`}
+                    style={{
+                        gridTemplateColumns: `
+                            ${isFinishedWorkout ? "" : "15% "}
+                            10% 
+                            ${typeFlags.isWeight ? "1fr " : ""}
+                            ${typeFlags.isReps ? "1fr " : ""}
+                            ${typeFlags.isDistance ? "1fr " : ""}
+                            ${typeFlags.isDuration ? "1fr " : ""}
+                            ${isRoutine || isFinishedWorkout ? "" : "15%"}
+                        `.trim(),
+                    }}
+                >
+                    <TableHeader className="contents">
+                        <TableRow className="contents">
+                            {!isFinishedWorkout && (
+                                <TableHead className="h-8"></TableHead>
                             )}
-                            <TableHead>SET</TableHead>
+                            <TableHead className="h-8">SET</TableHead>
                             {typeFlags.isWeight && (
-                                <TableHead>WEIGHT</TableHead>
+                                <TableHead className="h-8">WEIGHT</TableHead>
                             )}
-                            {typeFlags.isReps && <TableHead>REPS</TableHead>}
+                            {typeFlags.isReps && (
+                                <TableHead className="h-8">REPS</TableHead>
+                            )}
                             {typeFlags.isDistance && (
-                                <TableHead>DISTANCE</TableHead>
+                                <TableHead className="h-8">DISTANCE</TableHead>
                             )}
                             {typeFlags.isDuration && (
-                                <TableHead>DURATION</TableHead>
+                                <TableHead className="h-8">DURATION</TableHead>
                             )}
-                            {isRoutine || isFinishedWorkout ? null : (
-                                <TableHead className="flex justify-center items-center">
-                                    <Check className="w-4 h-4 text-center" />
+                            {!isRoutine && !isFinishedWorkout && (
+                                <TableHead className="text-center h-8 flex justify-center items-center w-full h-full">
+                                    <Check className="w-4 h-4" />
                                 </TableHead>
                             )}
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="contents">
                         {sets.map((set, index) => (
-                            <TableRow
-                                key={index}
-                                className={selectedStyle(set)}
-                            >
-                                {isFinishedWorkout ? null : (
-                                    <TableCell>
+                            <TableRow key={index} className="contents">
+                                {!isFinishedWorkout && (
+                                    <TableCell
+                                        className={`text-center ${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <Button
                                             size="sm"
                                             variant="outline"
@@ -204,15 +217,22 @@ export function ExerciseCard({
                                         </Button>
                                     </TableCell>
                                 )}
-                                <TableCell>{index + 1}</TableCell>
+                                <TableCell
+                                    className={`flex items-center h-full w-full ${
+                                        set.completed ? "bg-green-900" : ""
+                                    }`}
+                                >
+                                    {index + 1}
+                                </TableCell>
                                 {typeFlags.isWeight && (
-                                    <TableCell>
+                                    <TableCell
+                                        className={`${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <Input
+                                            className={selectedInputStyle(set)}
                                             disabled={isFinishedWorkout}
-                                            className={
-                                                selectedInputStyle(set) +
-                                                "w-full max-w-16"
-                                            }
                                             value={set.weight}
                                             onChange={(e) => {
                                                 if (onSetsChange) {
@@ -228,13 +248,14 @@ export function ExerciseCard({
                                     </TableCell>
                                 )}
                                 {typeFlags.isReps && (
-                                    <TableCell>
+                                    <TableCell
+                                        className={`${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <Input
+                                            className={selectedInputStyle(set)}
                                             disabled={isFinishedWorkout}
-                                            className={
-                                                selectedInputStyle(set) +
-                                                "w-full max-w-16"
-                                            }
                                             value={set.reps}
                                             onChange={(e) => {
                                                 if (onSetsChange) {
@@ -250,21 +271,20 @@ export function ExerciseCard({
                                     </TableCell>
                                 )}
                                 {typeFlags.isDistance && (
-                                    <TableCell>
+                                    <TableCell
+                                        className={`${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <Input
+                                            className={selectedInputStyle(set)}
                                             disabled={isFinishedWorkout}
-                                            className={
-                                                selectedInputStyle(set) +
-                                                (!typeFlags.isDuration
-                                                    ? "w-full"
-                                                    : "w-full max-w-16")
-                                            }
                                             value={set.distance}
                                             onChange={(e) => {
                                                 if (onSetsChange) {
                                                     const newSets = [...sets];
                                                     newSets[index].distance =
-                                                        parseInt(
+                                                        parseFloat(
                                                             e.target.value
                                                         );
                                                     onSetsChange(newSets);
@@ -274,9 +294,13 @@ export function ExerciseCard({
                                     </TableCell>
                                 )}
                                 {typeFlags.isDuration && (
-                                    <TableCell>
+                                    <TableCell
+                                        className={`${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <ExerciseSetTimer
-                                            timeSet={set.duration!}
+                                            timeSet={set.duration || 0}
                                             onDurationChange={(duration) => {
                                                 if (onSetsChange) {
                                                     const newSets = [...sets];
@@ -288,11 +312,16 @@ export function ExerciseCard({
                                             isActive={
                                                 !isFinishedWorkout && !isRoutine
                                             }
+                                            isCompleted={set.completed}
                                         />
                                     </TableCell>
                                 )}
-                                {isRoutine || isFinishedWorkout ? null : (
-                                    <TableCell className="text-center">
+                                {!isRoutine && !isFinishedWorkout && (
+                                    <TableCell
+                                        className={`flex justify-center items-center w-full h-full ${
+                                            set.completed ? "bg-green-900" : ""
+                                        }`}
+                                    >
                                         <Button
                                             size="sm"
                                             variant={
