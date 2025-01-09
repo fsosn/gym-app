@@ -37,7 +37,7 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
     return (
         <Card
             onClick={onWorkoutCardClick}
-            className="hover:bg-zinc-900 cursor-pointer"
+            className="hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer"
         >
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
