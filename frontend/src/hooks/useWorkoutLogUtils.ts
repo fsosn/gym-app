@@ -23,13 +23,14 @@ export function useWorkoutLogUtils(
 
     const totalVolume = exercises.reduce((total, exercise) => {
         const exerciseVolume = exercise.sets.reduce((volume, set: Set) => {
-            if (
-                set.completed &&
-                !Number.isNaN(set.weight) &&
-                !Number.isNaN(set.reps)
-            ) {
-                return volume + set.weight * set.reps;
-            }
+            if (set.weight && set.reps)
+                if (
+                    set.completed &&
+                    !Number.isNaN(set.weight) &&
+                    !Number.isNaN(set.reps)
+                ) {
+                    return volume + set.weight * set.reps;
+                }
             return volume;
         }, 0);
         return total + exerciseVolume;

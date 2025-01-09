@@ -16,11 +16,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Set } from "@/types/exercise_types";
+import { ExerciseType, Set } from "@/types/exercise_types";
 import { ArrowDown, ArrowUp, Check, Ellipsis, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import ExerciseSetTimer from "./ExerciseSetTimer";
 
 interface ExerciseCardProps {
     exerciseName: string;
+    exerciseType: ExerciseType;
     sets: Set[];
     onSetsChange?: (sets: Set[]) => void;
     onDelete?: () => void;
@@ -32,6 +35,7 @@ interface ExerciseCardProps {
 
 export function ExerciseCard({
     exerciseName,
+    exerciseType,
     sets,
     onSetsChange,
     onDelete,
@@ -40,9 +44,25 @@ export function ExerciseCard({
     isRoutine,
     isFinishedWorkout,
 }: ExerciseCardProps) {
+    const [typeFlags, setTypeFlags] = useState({
+        isWeight: false,
+        isReps: false,
+        isDistance: false,
+        isDuration: false,
+    });
+
     const handleAddSet = () => {
         if (onSetsChange) {
-            onSetsChange([...sets, { weight: 0, reps: 0, completed: false }]);
+            onSetsChange([
+                ...sets,
+                {
+                    weight: 0,
+                    reps: 0,
+                    distance: 0,
+                    duration: 0,
+                    completed: false,
+                },
+            ]);
         }
     };
 
@@ -67,6 +87,40 @@ export function ExerciseCard({
     const selectedInputStyle = (set: Set) => {
         return set.completed ? "w-12 bg-green-950 hover:bg-green-950" : "w-12";
     };
+
+    const checkExerciseType = () => {
+        setTypeFlags({
+            isWeight: [
+                ExerciseType.WEIGHT_REPS,
+                ExerciseType.WEIGHTED_BODYWEIGHT,
+                ExerciseType.ASSISTED_BODYWEIGHT,
+                ExerciseType.WEIGHT_DISTANCE,
+                ExerciseType.DURATION_WEIGHT,
+            ].includes(exerciseType),
+
+            isReps: [
+                ExerciseType.WEIGHT_REPS,
+                ExerciseType.BODYWEIGHT_REPS,
+                ExerciseType.WEIGHTED_BODYWEIGHT,
+                ExerciseType.ASSISTED_BODYWEIGHT,
+            ].includes(exerciseType),
+
+            isDistance: [
+                ExerciseType.DISTANCE_DURATION,
+                ExerciseType.WEIGHT_DISTANCE,
+            ].includes(exerciseType),
+
+            isDuration: [
+                ExerciseType.DURATION,
+                ExerciseType.DURATION_WEIGHT,
+                ExerciseType.DISTANCE_DURATION,
+            ].includes(exerciseType),
+        });
+    };
+
+    useEffect(() => {
+        checkExerciseType();
+    }, [exerciseType]);
 
     return (
         <Card className="m-2">
@@ -106,16 +160,24 @@ export function ExerciseCard({
                     )}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-1">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             {isFinishedWorkout ? null : (
-                                <TableHead className="w-[70px] flex justify-center items-center"></TableHead>
+                                <TableHead className="flex justify-center items-center"></TableHead>
                             )}
                             <TableHead>SET</TableHead>
-                            <TableHead>WEIGHT</TableHead>
-                            <TableHead>REPS</TableHead>
+                            {typeFlags.isWeight && (
+                                <TableHead>WEIGHT</TableHead>
+                            )}
+                            {typeFlags.isReps && <TableHead>REPS</TableHead>}
+                            {typeFlags.isDistance && (
+                                <TableHead>DISTANCE</TableHead>
+                            )}
+                            {typeFlags.isDuration && (
+                                <TableHead>DURATION</TableHead>
+                            )}
                             {isRoutine || isFinishedWorkout ? null : (
                                 <TableHead className="flex justify-center items-center">
                                     <Check className="w-4 h-4 text-center" />
@@ -143,37 +205,92 @@ export function ExerciseCard({
                                     </TableCell>
                                 )}
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>
-                                    <Input
-                                        disabled={isFinishedWorkout}
-                                        className={selectedInputStyle(set)}
-                                        value={set.weight}
-                                        onChange={(e) => {
-                                            if (onSetsChange) {
-                                                const newSets = [...sets];
-                                                newSets[index].weight =
-                                                    parseFloat(e.target.value);
-                                                onSetsChange(newSets);
+                                {typeFlags.isWeight && (
+                                    <TableCell>
+                                        <Input
+                                            disabled={isFinishedWorkout}
+                                            className={
+                                                selectedInputStyle(set) +
+                                                "w-full max-w-16"
                                             }
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Input
-                                        disabled={isFinishedWorkout}
-                                        className={selectedInputStyle(set)}
-                                        value={set.reps}
-                                        onChange={(e) => {
-                                            if (onSetsChange) {
-                                                const newSets = [...sets];
-                                                newSets[index].reps = parseInt(
-                                                    e.target.value
-                                                );
-                                                onSetsChange(newSets);
+                                            value={set.weight}
+                                            onChange={(e) => {
+                                                if (onSetsChange) {
+                                                    const newSets = [...sets];
+                                                    newSets[index].weight =
+                                                        parseFloat(
+                                                            e.target.value
+                                                        );
+                                                    onSetsChange(newSets);
+                                                }
+                                            }}
+                                        />
+                                    </TableCell>
+                                )}
+                                {typeFlags.isReps && (
+                                    <TableCell>
+                                        <Input
+                                            disabled={isFinishedWorkout}
+                                            className={
+                                                selectedInputStyle(set) +
+                                                "w-full max-w-16"
                                             }
-                                        }}
-                                    />
-                                </TableCell>
+                                            value={set.reps}
+                                            onChange={(e) => {
+                                                if (onSetsChange) {
+                                                    const newSets = [...sets];
+                                                    newSets[index].reps =
+                                                        parseInt(
+                                                            e.target.value
+                                                        );
+                                                    onSetsChange(newSets);
+                                                }
+                                            }}
+                                        />
+                                    </TableCell>
+                                )}
+                                {typeFlags.isDistance && (
+                                    <TableCell>
+                                        <Input
+                                            disabled={isFinishedWorkout}
+                                            className={
+                                                selectedInputStyle(set) +
+                                                (!typeFlags.isDuration
+                                                    ? "w-full"
+                                                    : "w-full max-w-16")
+                                            }
+                                            value={set.distance}
+                                            onChange={(e) => {
+                                                if (onSetsChange) {
+                                                    const newSets = [...sets];
+                                                    newSets[index].distance =
+                                                        parseInt(
+                                                            e.target.value
+                                                        );
+                                                    onSetsChange(newSets);
+                                                }
+                                            }}
+                                        />
+                                    </TableCell>
+                                )}
+                                {typeFlags.isDuration && (
+                                    <TableCell>
+                                        <ExerciseSetTimer
+                                            timeSet={set.duration!}
+                                            onDurationChange={(duration) => {
+                                                if (onSetsChange) {
+                                                    const newSets = [...sets];
+                                                    newSets[index].duration =
+                                                        duration;
+                                                    onSetsChange(newSets);
+                                                }
+                                            }}
+                                            isActive={
+                                                !isFinishedWorkout && !isRoutine
+                                            }
+                                        />
+                                    </TableCell>
+                                )}
                                 {isRoutine || isFinishedWorkout ? null : (
                                     <TableCell className="text-center">
                                         <Button

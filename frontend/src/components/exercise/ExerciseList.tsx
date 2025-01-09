@@ -28,6 +28,7 @@ export function ExerciseList({
                     <ExerciseCard
                         key={index}
                         exerciseName={exercise.title}
+                        exerciseType={exercise.exercise_type!}
                         sets={exercise.sets}
                         onSetsChange={
                             onExerciseChange

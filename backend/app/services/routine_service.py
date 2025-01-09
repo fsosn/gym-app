@@ -32,7 +32,7 @@ def create_routine(data, user_id):
                 weight = set_data.get("weight", 0)
                 reps = set_data.get("reps", 0)
                 distance = set_data.get("distance", 0)
-                duration = set_data.get("duration", "00:00")
+                duration = set_data.get("duration", 0)
 
                 routine_set = RoutineSet(
                     routine_exercise_id=routine_exercise.id,
@@ -66,7 +66,16 @@ def get_routine_by_id(routine_id, user_id):
         "exercises": [
             {
                 "id": re.exercise_id,
-                "title": Exercise.query.get(re.exercise_id).title,
+                "title": db.session.execute(
+                    db.select(Exercise).filter(Exercise.id == re.exercise_id)
+                )
+                .scalar_one()
+                .title,
+                "exercise_type": db.session.execute(
+                    db.select(Exercise).filter(Exercise.id == re.exercise_id)
+                )
+                .scalar_one()
+                .exercise_type,
                 "sets": [
                     {
                         "reps": rs.reps,
@@ -134,7 +143,7 @@ def update_routine(routine_id, data, user_id):
                     reps=set_data.get("reps", 0),
                     weight=set_data.get("weight", 0),
                     distance=set_data.get("distance", 0),
-                    duration=set_data.get("duration", "00:00"),
+                    duration=set_data.get("duration", 0),
                 )
                 db.session.add(routine_set)
 
