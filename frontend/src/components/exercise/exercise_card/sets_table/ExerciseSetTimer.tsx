@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "../ui/button";
+import { Button } from "../../../ui/button";
 
 interface ExerciseSetTimerProps {
     timeSet: number;
@@ -10,18 +10,17 @@ interface ExerciseSetTimerProps {
     isCompleted: boolean;
 }
 
-export default function ExerciseSetTimer({
+export const ExerciseSetTimer: React.FC<ExerciseSetTimerProps> = ({
     timeSet,
     onDurationChange,
     isActive,
     isCompleted,
-}: ExerciseSetTimerProps) {
+}: ExerciseSetTimerProps) => {
     const [time, setTime] = useState(timeSet);
     const [timeInterval, setTimeInterval] = useState<NodeJS.Timeout | null>(
         null
     );
     const [isRunning, setIsRunning] = useState<boolean>(false);
-
     const DEFAULT_VALUE = "00:00:00";
 
     const formatTime = (seconds: number) => {
@@ -129,4 +128,6 @@ export default function ExerciseSetTimer({
             )}
         </div>
     );
-}
+};
+
+export default ExerciseSetTimer;

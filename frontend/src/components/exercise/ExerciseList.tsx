@@ -1,4 +1,4 @@
-import { ExerciseCard } from "@/components/exercise/ExerciseCard";
+import { ExerciseCard } from "@/components/exercise/exercise_card/ExerciseCard";
 import { ExerciseRecord, Set } from "@/types/exercise_types";
 
 interface ExerciseListProps {
