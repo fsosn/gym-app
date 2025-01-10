@@ -17,7 +17,7 @@ const SignOutButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {...props}
                 onClick={() => auth?.signOut(() => {})}
             >
-                <LogOut className="h-[1.2rem] w-[1.2rem]" />
+                <LogOut className="h-6 w-6" />
             </Button>
         );
     }
