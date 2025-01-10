@@ -3,7 +3,7 @@ import Page from "./template/Page";
 
 export default function WorkoutPage() {
     return (
-        <Page>
+        <Page title="Statistics">
             <Statistics />
         </Page>
     );

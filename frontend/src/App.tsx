@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 import HistoryPage from "./pages/HistoryPage";
 import { FinishedWorkout } from "./components/history/FinishedWorkout";
 import StatisticsPage from "./pages/StatisticsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
     return (
@@ -78,6 +79,14 @@ function App() {
                     element={
                         <RequireAuth>
                             <StatisticsPage />
+                        </RequireAuth>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <RequireAuth>
+                            <ProfilePage />
                         </RequireAuth>
                     }
                 />

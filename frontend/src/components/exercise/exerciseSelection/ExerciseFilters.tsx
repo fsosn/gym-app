@@ -33,7 +33,7 @@ const ExerciseFilters: React.FC<FiltersProps> = ({ setFilters }) => {
             <div>
                 <h3 className="font-bold mb-2">Filters</h3>
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
                 <div className="mb-2 relative">
                     <Search
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"

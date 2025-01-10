@@ -78,14 +78,13 @@ const auth: Auth = {
     },
 
     signOut: (callback: () => void): void => {
-        const token = null;
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${null}`;
         auth.isAuthenticated = false;
         auth.userId = null;
         auth.email = null;
         Cookies.remove("userData");
-        window.location.reload();
         callback();
+        window.location.reload();
     },
 
     register: async (

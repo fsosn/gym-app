@@ -7,10 +7,7 @@ import { WorkoutsOverTime } from "./components/WorkoutsOverTime";
 
 export default function Statistics() {
     return (
-        <div className="px-4 py-6 md:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold mb-4 text-blue-500">
-                Statistics
-            </h1>
+        <div>
             <div className="pb-4">
                 <WorkoutsOverTime />
             </div>

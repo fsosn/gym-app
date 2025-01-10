@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ExerciseSelection from "@/components/exercise/exerciseSelection/ExerciseSelection";
 import { WorkoutSummaryCards } from "@/components/workout/workout_details/WorkoutSummaryCards";
@@ -18,8 +18,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export function WorkoutLog() {
     const [isEditMode, setIsEditMode] = useState<boolean | null>(null);
-    const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
-        useState(false);
     const [title, setTitle] = useState<string>("");
     const [startTime, setStartTime] = useState<number | null>(null);
     const [finishedWorkout, setFinishedWorkout] = useState<Workout>();
@@ -175,9 +173,6 @@ export function WorkoutLog() {
         navigate("/");
     };
 
-    const toggleExerciseModal = () =>
-        setShowExerciseSelectionModal((prev) => !prev);
-
     return (
         <div>
             <div>
@@ -233,38 +228,29 @@ export function WorkoutLog() {
                                 isRoutine={false}
                                 isFinishedWorkout={false}
                             />
-                            <div className="m-2 mt-2">
-                                <Button
-                                    onClick={() =>
-                                        setShowExerciseSelectionModal(true)
-                                    }
-                                    className="w-full"
-                                >
-                                    <Plus className="w-4 h-4 mr-1" />
-                                    <span>Add Exercise</span>
-                                </Button>
-                                {showExerciseSelectionModal && (
+                            <div>
+                                <div className="m-2 mt-2">
                                     <ExerciseSelection
+                                        buttonLabel="Add Exercises"
                                         onAddExercises={(newExercises) => {
                                             addExercises(newExercises);
-                                            toggleExerciseModal();
                                         }}
-                                        onCancel={toggleExerciseModal}
-                                    />
-                                )}
-                            </div>
-                            {!isEditMode && (
-                                <div className="m-2 mt-2 pb-6">
-                                    <AlertDialogDiscard
-                                        label="Discard Workout"
-                                        description="If you discard this workout, all unsaved
-                                        changes will be lost."
-                                        onDiscard={
-                                            handleDiscardWorkoutButtonClick
-                                        }
+                                        isSelectionActive={true}
                                     />
                                 </div>
-                            )}
+                                {!isEditMode && (
+                                    <div className="m-2 mt-2 pb-6">
+                                        <AlertDialogDiscard
+                                            label="Discard Workout"
+                                            description="If you discard this workout, all unsaved
+                                        changes will be lost."
+                                            onDiscard={
+                                                handleDiscardWorkoutButtonClick
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -6,7 +6,7 @@ import {
     fetchRoutine,
     updateRoutine,
 } from "@/services/routines";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExerciseList } from "@/components/exercise/ExerciseList";
 import ExerciseSelection from "@/components/exercise/exerciseSelection/ExerciseSelection";
@@ -19,8 +19,6 @@ import { useToast } from "@/hooks/use-toast";
 export function RoutineForm() {
     const { routineId } = useParams();
     const [isUpdateMode, setIsUpdateMode] = useState(false);
-    const [showExerciseSelectionModal, setShowExerciseSelectionModal] =
-        useState(false);
     const [displayedTitle, setDisplayedTitle] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -118,9 +116,6 @@ export function RoutineForm() {
         navigate("/");
     };
 
-    const toggleExerciseModal = () =>
-        setShowExerciseSelectionModal((prev) => !prev);
-
     return (
         <div>
             <nav className="w-full flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-zinc-700">
@@ -169,26 +164,15 @@ export function RoutineForm() {
                             onMoveExerciseDown={moveExerciseDown}
                         />
                         <div className="m-2 mt-2">
-                            <Button
-                                onClick={() =>
-                                    setShowExerciseSelectionModal(true)
-                                }
-                                className="w-full"
-                            >
-                                <Plus className="w-4 h-4 mr-1" />
-                                <span>Add Exercise</span>
-                            </Button>
-                            {showExerciseSelectionModal && (
-                                <ExerciseSelection
-                                    onAddExercises={(newExercises) => {
-                                        addExercises(newExercises);
-                                        toggleExerciseModal();
-                                    }}
-                                    onCancel={toggleExerciseModal}
-                                />
-                            )}
+                            <ExerciseSelection
+                                buttonLabel="Add Exercises"
+                                onAddExercises={(newExercises) => {
+                                    addExercises(newExercises);
+                                }}
+                                isSelectionActive={true}
+                            />
                         </div>
-                        {isUpdateMode ? (
+                        {isUpdateMode && (
                             <div className="m-2 mt-2 pb-6">
                                 <AlertDialogDiscard
                                     label="Discard Routine"
@@ -196,7 +180,7 @@ export function RoutineForm() {
                                     onDiscard={handleDeleteRoutineButtonClick}
                                 />
                             </div>
-                        ) : null}
+                        )}
                     </div>
                 )}
             </div>
