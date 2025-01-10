@@ -1,49 +1,58 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { API_ENDPOINTS } from "@/config";
 import { Button } from "@/components/ui/button";
 import ExerciseFilters from "./ExerciseFilters";
 import ExerciseTable from "./ExerciseTable";
 import { Exercise } from "@/types/exercise_types";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { fetchExercises } from "@/services/exercises";
 
 interface ExerciseSelectionProps {
-    onAddExercises: (exercises: Exercise[]) => void;
-    onCancel: () => void;
+    buttonLabel: string;
+    onAddExercises?: (exercises: Exercise[]) => void;
+    isSelectionActive: boolean;
 }
 
 const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
+    buttonLabel,
     onAddExercises,
-    onCancel,
+    isSelectionActive,
 }) => {
     const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
     const [exerciseList, setExerciseList] = useState<Exercise[]>([]);
     const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
+    const DEFAULT = "Any";
     const [filters, setFilters] = useState({
-        muscle: "Any",
-        equipment: "Any",
-        exercise_type: "Any",
+        muscle: DEFAULT,
+        equipment: DEFAULT,
+        exercise_type: DEFAULT,
         search: "",
     });
 
     useEffect(() => {
-        const fetchExercises = async () => {
+        const getExercises = async () => {
             try {
-                const response = await axios.get<Exercise[]>(
-                    `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.EXERCISES}`
-                );
-                setExerciseList(response.data);
-                setFilteredExercises(response.data);
+                const exercises = await fetchExercises();
+                setExerciseList(exercises);
+                setFilteredExercises(exercises);
             } catch (error) {
                 console.error("Error fetching exercises:", error);
             }
         };
 
-        fetchExercises();
+        getExercises();
     }, []);
 
     useEffect(() => {
         let filtered = exerciseList;
-
         if (filters.search.trim()) {
             filtered = exerciseList.filter((exercise) =>
                 exercise.title
@@ -51,17 +60,17 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
                     .includes(filters.search.toLowerCase())
             );
         } else {
-            if (filters.muscle !== "Any") {
+            if (filters.muscle !== DEFAULT) {
                 filtered = filtered.filter(
                     (exercise) => exercise.primary_muscle === filters.muscle
                 );
             }
-            if (filters.equipment !== "Any") {
+            if (filters.equipment !== DEFAULT) {
                 filtered = filtered.filter(
                     (exercise) => exercise.equipment === filters.equipment
                 );
             }
-            if (filters.exercise_type !== "Any") {
+            if (filters.exercise_type !== DEFAULT) {
                 filtered = filtered.filter(
                     (exercise) =>
                         exercise.exercise_type === filters.exercise_type
@@ -80,30 +89,44 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     };
 
     const handleAddExercises = () => {
-        onAddExercises(selectedExercises);
+        if (onAddExercises) onAddExercises(selectedExercises);
         setSelectedExercises([]);
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-zinc-100 dark:bg-zinc-900 p-4 rounded-lg w-96">
-                <h2 className="text-lg font-bold mb-4">Select Exercises</h2>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                    {buttonLabel}
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm md:max-w-lg lg:max-w-xl min-h-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Exercises</DialogTitle>
+                    <DialogDescription />
+                </DialogHeader>
                 <ExerciseFilters setFilters={setFilters} />
                 <ExerciseTable
                     exercises={filteredExercises}
                     selectedExercises={selectedExercises}
-                    toggleSelection={toggleExerciseSelection}
+                    toggleSelection={
+                        isSelectionActive ? toggleExerciseSelection : undefined
+                    }
                 />
-                <div className="flex justify-end mt-4">
-                    <Button onClick={handleAddExercises} className="mr-2">
-                        Add Selected Exercises
-                    </Button>
-                    <Button onClick={onCancel} variant="outline">
-                        Cancel
-                    </Button>
-                </div>
-            </div>
-        </div>
+                {isSelectionActive && (
+                    <DialogFooter>
+                        <DialogClose>
+                            <Button
+                                onClick={handleAddExercises}
+                                className="mr-2"
+                            >
+                                Add Selected Exercises
+                            </Button>
+                        </DialogClose>
+                    </DialogFooter>
+                )}
+            </DialogContent>
+        </Dialog>
     );
 };
 

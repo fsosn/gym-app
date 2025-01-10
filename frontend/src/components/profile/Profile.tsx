@@ -1,6 +1,7 @@
 import SignOutButton from "@/components/auth/SignOutButton";
 import { ModeToggle } from "@/components/theme/components/ModeToggle";
 import { UserCard } from "./UserCard";
+import ExerciseSelection from "../exercise/exerciseSelection/ExerciseSelection";
 
 export function Profile() {
     return (
@@ -19,7 +20,14 @@ export function Profile() {
                     </div>
                 </header>
                 <div className="py-4">
-                    <UserCard />
+                    <div className="max-w-sm flex flex-col gap-4">
+                        <UserCard />
+                        <ExerciseSelection
+                            buttonLabel="See Exercises"
+                            onAddExercises={undefined}
+                            isSelectionActive={false}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
