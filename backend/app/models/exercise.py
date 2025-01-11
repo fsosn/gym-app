@@ -58,3 +58,16 @@ class Exercise(db.Model):
     other_muscles = db.Column(db.ARRAY(db.String(50)), nullable=True)
     equipment = db.Column(db.String(50), nullable=False)
     exercise_type = db.Column(db.String(50), nullable=False)
+
+    workouts = db.relationship(
+        "WorkoutExercise",
+        backref="exercise",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+    routines = db.relationship(
+        "RoutineExercise",
+        backref="exercise",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )

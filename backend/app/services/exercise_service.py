@@ -51,7 +51,10 @@ def create_exercise_admin(
 def get_exercise_by_id(exercise_id, identity):
     role, user_id = identity.get("role"), identity.get("id")
 
-    exercise = db.session.execute(db.select(Exercise, exercise_id))
+    exercise = db.session.execute(
+        db.select(Exercise).filter(Exercise.id == exercise_id)
+    ).scalar_one_or_none()
+
     if not exercise:
         return f"Exercise with id {exercise_id} does not exist.", 404
 
@@ -124,8 +127,9 @@ def update_exercise(
     identity,
 ):
     exercise = db.session.execute(
-        db.select(Exercise, exercise_id)
-    ).scalar_one()
+        db.select(Exercise).filter(Exercise.id == exercise_id)
+    ).scalar_one_or_none()
+
     if not exercise:
         return None, True, "Exercise not found.", 404
 
@@ -154,8 +158,8 @@ def delete_exercise(exercise_id, identity):
     role, user_id = identity.get("role"), identity.get("id")
 
     exercise = db.session.execute(
-        db.select(Exercise, exercise_id)
-    ).scalar_one()
+        db.select(Exercise).filter(Exercise.id == exercise_id)
+    ).scalar_one_or_none()
 
     if not exercise:
         return "Exercise not found.", 404

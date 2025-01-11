@@ -60,7 +60,10 @@ def create_exercise_admin():
 @exercise_bp.route("/exercises/<int:exercise_id>", methods=["GET"])
 @jwt_required()
 def get_exercise(exercise_id):
-    result, status_code = exercise_service.get_exercise_by_id(exercise_id)
+    identity = get_jwt_identity()
+    result, status_code = exercise_service.get_exercise_by_id(
+        exercise_id, identity
+    )
     return result, status_code
 
 
