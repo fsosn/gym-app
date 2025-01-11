@@ -106,7 +106,7 @@ export function CreateExercise() {
                     <Plus className="w-3 h-3 mr-2" /> Create Exercise
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-sm md:max-w-lg lg:max-w-xl rounded-md">
+            <DialogContent className="max-w-sm md:max-w-lg lg:max-w-xl rounded-md h-[75vh]">
                 <DialogHeader>
                     <DialogTitle>Create Your Exercise</DialogTitle>
                     <DialogDescription>
@@ -114,7 +114,7 @@ export function CreateExercise() {
                         to your goals.
                     </DialogDescription>
                 </DialogHeader>
-                <ScrollArea className="h-[75vh] max-h-[75vh] rounded-md">
+                <ScrollArea className="max-h-[75vh] rounded-md">
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(handleCreateExercise)}

@@ -46,6 +46,7 @@ export enum ExerciseType {
 
 interface BaseExercise {
     id: number;
+    user_id: number;
     title: string;
 }
 

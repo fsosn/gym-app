@@ -21,7 +21,18 @@ export const postExercise = async (exerciseData: ExercisePostRequest) => {
             exerciseData
         );
     } catch (error) {
-        console.error("Error while posting workout:", error);
+        console.error("Error while posting exercise:", error);
+        throw error;
+    }
+};
+
+export const deleteExercise = async (id: number) => {
+    try {
+        await axios.delete(
+            `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.EXERCISES}/${id}`
+        );
+    } catch (error) {
+        console.error("Error while deleting exercise:", error);
         throw error;
     }
 };
