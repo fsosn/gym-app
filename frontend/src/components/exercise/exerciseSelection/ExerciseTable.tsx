@@ -8,6 +8,7 @@ import {
     TableCell,
 } from "@/components/ui/table";
 import { Exercise } from "@/types/exercise_types";
+import { ExerciseInfo } from "../exercise_info/ExerciseInfo";
 
 interface ExerciseTableProps {
     exercises: Exercise[];
@@ -33,8 +34,10 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-secondary hover:bg-muted">
-                            <TableHead className="w-[60%]">Name</TableHead>
-                            <TableHead className="w-[40%]">Equipment</TableHead>
+                            <TableHead className="w-[4%]"></TableHead>
+                            <TableHead className="w-[32%]">Name</TableHead>
+                            <TableHead className="w-[32%]">Equipment</TableHead>
+                            <TableHead className="w-[32%]">Type</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -50,11 +53,15 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                                     toggleSelection && toggleSelection(exercise)
                                 }
                             >
+                                <TableCell className="flex items-center justify-center">
+                                    <ExerciseInfo exercise={exercise} />
+                                </TableCell>
                                 <TableCell>
                                     {isExerciseSelected(exercise) && "+ "}
                                     {exercise.title}
                                 </TableCell>
                                 <TableCell>{exercise.equipment}</TableCell>
+                                <TableCell>{exercise.exercise_type}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

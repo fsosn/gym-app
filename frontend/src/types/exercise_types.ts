@@ -46,10 +46,12 @@ export enum ExerciseType {
 
 interface BaseExercise {
     id: number;
+    user_id: number;
     title: string;
 }
 
 export interface Exercise extends BaseExercise {
+    description: string;
     primary_muscle: MuscleCategory;
     other_muscles: MuscleCategory[];
     equipment: Equipment;
@@ -66,5 +68,14 @@ export interface Set {
 
 export interface ExerciseRecord extends BaseExercise {
     sets: Set[];
+    exercise_type: ExerciseType;
+}
+
+export interface ExercisePostRequest {
+    title: string;
+    description: string;
+    primary_muscle: MuscleCategory;
+    other_muscles: MuscleCategory[];
+    equipment: Equipment;
     exercise_type: ExerciseType;
 }

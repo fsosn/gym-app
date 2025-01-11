@@ -9,12 +9,12 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import {
-    MuscleCategory,
-    Equipment,
-    ExerciseType,
-} from "@/types/exercise_types";
 import { Search } from "lucide-react";
+import {
+    EQUIPMENT,
+    EXERCISE_TYPES,
+    MUSCLE_CATEGORIES,
+} from "@/constants/exerciseConstants";
 
 interface FiltersProps {
     setFilters: React.Dispatch<
@@ -63,7 +63,7 @@ const ExerciseFilters: React.FC<FiltersProps> = ({ setFilters }) => {
                             <SelectGroup>
                                 <SelectLabel>Muscle</SelectLabel>
                                 <SelectItem value="Any">Any</SelectItem>
-                                {Object.values(MuscleCategory).map((muscle) => (
+                                {MUSCLE_CATEGORIES.map((muscle) => (
                                     <SelectItem key={muscle} value={muscle}>
                                         {muscle}
                                     </SelectItem>
@@ -86,7 +86,7 @@ const ExerciseFilters: React.FC<FiltersProps> = ({ setFilters }) => {
                             <SelectGroup>
                                 <SelectLabel>Equipment</SelectLabel>
                                 <SelectItem value="Any">Any</SelectItem>
-                                {Object.values(Equipment).map((equip) => (
+                                {EQUIPMENT.map((equip) => (
                                     <SelectItem key={equip} value={equip}>
                                         {equip}
                                     </SelectItem>
@@ -109,7 +109,7 @@ const ExerciseFilters: React.FC<FiltersProps> = ({ setFilters }) => {
                             <SelectGroup>
                                 <SelectLabel>Type</SelectLabel>
                                 <SelectItem value="Any">Any</SelectItem>
-                                {Object.values(ExerciseType).map((type) => (
+                                {EXERCISE_TYPES.map((type) => (
                                     <SelectItem key={type} value={type}>
                                         {type}
                                     </SelectItem>
