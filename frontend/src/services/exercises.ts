@@ -26,7 +26,7 @@ export const postExercise = async (exerciseData: ExercisePostRequest) => {
     }
 };
 
-export const deleteExercise = async (id: number) => {
+export const deleteExerciseById = async (id: number) => {
     try {
         await axios.delete(
             `${API_ENDPOINTS.BASE_URL}${API_ENDPOINTS.EXERCISES}/${id}`

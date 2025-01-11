@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,12 +40,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Plus } from "lucide-react";
-import { postExercise } from "@/services/exercises";
 import {
     EQUIPMENT,
     EXERCISE_TYPES,
     MUSCLE_CATEGORIES,
 } from "@/constants/exerciseConstants";
+import { ExerciseContext } from "@/contexts/ExerciseContext";
 
 const FormSchema = z.object({
     title: z.string().min(1, "Title is required").max(50, "Max 50 characters"),
@@ -57,6 +57,7 @@ const FormSchema = z.object({
 });
 
 export function CreateExercise() {
+    const exerciseContext = useContext(ExerciseContext);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -82,7 +83,7 @@ export function CreateExercise() {
         };
 
         try {
-            await postExercise(exercise);
+            await exerciseContext?.createExercise(exercise);
             toast({
                 title: "Success!",
                 description: "Your exercise was successfully created.",
@@ -145,7 +146,7 @@ export function CreateExercise() {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
-                                                placeholder="Desciption (optional)"
+                                                placeholder="Description (optional)"
                                             />
                                         </FormControl>
                                         <FormMessage />

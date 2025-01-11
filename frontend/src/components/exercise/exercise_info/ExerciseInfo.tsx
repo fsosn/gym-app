@@ -1,3 +1,4 @@
+import { useContext, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Exercise } from "@/types/exercise_types";
 import {
@@ -12,7 +13,6 @@ import {
 import { Info } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { deleteExercise } from "@/services/exercises";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,24 +24,39 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ExerciseContext } from "@/contexts/ExerciseContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseInfoProps {
     exercise: Exercise;
 }
 
 export function ExerciseInfo({ exercise }: ExerciseInfoProps) {
-    const handleDeleteButtonClick = async (id: number) => {
+    const exerciseContext = useContext(ExerciseContext);
+    const { toast } = useToast();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleDeleteExercise = async (id: number) => {
         try {
-            await deleteExercise(id);
+            await exerciseContext?.deleteExercise(id);
+            setIsDialogOpen(false);
+            toast({
+                description: "Your exercise was successfully deleted.",
+            });
         } catch (error) {
-            console.error("Error fetching exercises:", error);
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to delete the exercise. Please try again.",
+            });
         }
     };
 
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                <Info className="w-4 h-4 text-blue-500 cursor-pointer" />
+                <Info className="w-4 h-4 text-blue-500 hover:text-blue-400 cursor-pointer" />
             </DialogTrigger>
             <DialogContent className="max-w-sm md:max-w-lg lg:max-w-xl rounded-md max-h-sm">
                 <DialogHeader>
@@ -104,7 +119,7 @@ export function ExerciseInfo({ exercise }: ExerciseInfoProps) {
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={() =>
-                                            handleDeleteButtonClick(exercise.id)
+                                            handleDeleteExercise(exercise.id)
                                         }
                                         className="bg-destructive text-white"
                                     >

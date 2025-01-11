@@ -34,9 +34,10 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-secondary hover:bg-muted">
-                            <TableHead className="w-[10%]"></TableHead>
-                            <TableHead className="w-[60%]">Name</TableHead>
-                            <TableHead className="w-[30%]">Equipment</TableHead>
+                            <TableHead className="w-[4%]"></TableHead>
+                            <TableHead className="w-[32%]">Name</TableHead>
+                            <TableHead className="w-[32%]">Equipment</TableHead>
+                            <TableHead className="w-[32%]">Type</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -60,6 +61,7 @@ const ExerciseTable: React.FC<ExerciseTableProps> = ({
                                     {exercise.title}
                                 </TableCell>
                                 <TableCell>{exercise.equipment}</TableCell>
+                                <TableCell>{exercise.exercise_type}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
