@@ -51,7 +51,9 @@ class ExerciseType(str, Enum):
 class Exercise(db.Model):
     __tablename__ = "exercise"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     title = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(500), nullable=True)
     primary_muscle = db.Column(db.String(50), nullable=False)
     other_muscles = db.Column(db.ARRAY(db.String(50)), nullable=True)
     equipment = db.Column(db.String(50), nullable=False)
