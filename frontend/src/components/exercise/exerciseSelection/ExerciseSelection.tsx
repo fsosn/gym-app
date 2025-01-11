@@ -14,6 +14,7 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { fetchExercises } from "@/services/exercises";
+import { CreateExercise } from "../create_exercise/CreateExercise";
 
 interface ExerciseSelectionProps {
     buttonLabel: string;
@@ -105,6 +106,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
                     <DialogTitle>Exercises</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
+                <CreateExercise />
                 <ExerciseFilters setFilters={setFilters} />
                 <ExerciseTable
                     exercises={filteredExercises}
